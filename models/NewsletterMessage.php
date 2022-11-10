@@ -45,7 +45,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             [['send_at', 'completed_at'], 'safe'],
             [['send_at', 'completed_at'], 'datetime'],
             [['blacklisted'], 'integer'],
-            [['recipients_file'], 'file', 'skipOnEmtpy' => true, 'extensions' => 'csv'],
+            [['recipients_file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'csv'],
             [['subject', 'html_file', 'text_file', 'template'], 'string', 'max' => 255],
         ];
     }
