@@ -13,6 +13,7 @@ class m221110_103330_create_newsletter_tables extends Migration
     public function safeUp()
     {
         $this->createTable('newsletter_messages', [
+            'id' => $this->primaryKey(),
             'subject' => $this->string()->notNull(),
             'html_file' => $this->string(),
             'text_file' => $this->string(),
@@ -24,7 +25,8 @@ class m221110_103330_create_newsletter_tables extends Migration
         ]);
         
         $this->createTable('newsletter_attachments', [
-            'message_id' => $this->integer(),
+            'id' => $this->primaryKey(),
+            'message_id' => $this->integer()->notNull(),
             'file_name' => $this->string()->notNull(),
             'mode' => $this->integer()
         ]);
@@ -47,6 +49,7 @@ class m221110_103330_create_newsletter_tables extends Migration
         );
         
         $this->createTable('newsletter_blacklist', [
+            'id' => $this->primaryKey(),
             'email' => $this->string()->notNull()->unique(),
             'added_at' => $this->datetime()->notNull(),
         ]);         
