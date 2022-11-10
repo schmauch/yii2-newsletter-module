@@ -8,6 +8,6 @@ class MessageController extends Controller
 {
     public function actionIndex()
     {
-        echo "hier";
+        return $this->render('index');
     }
 }
