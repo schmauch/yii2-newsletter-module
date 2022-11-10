@@ -2,7 +2,7 @@
     "name": "schmauch/yii2-newsletter-module",
     "autoload": {
         "psr-4": {
-            "schmauch\\newsletter": ""
+            "schmauch\\newsletter\\": ""
         }
     },
     "minimum-stability": "dev"
