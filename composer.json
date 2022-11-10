@@ -5,5 +5,9 @@
             "schmauch\\newsletter\\": ""
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require": {
+        "gri3li/yii2-csvdataprovider": "*",
+        "bizley/yii2-content-tools": "*" 
+    }
 }

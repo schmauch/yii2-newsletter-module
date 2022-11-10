@@ -16,6 +16,7 @@ use Yii;
  */
 class NewsletterAttachment extends \yii\db\ActiveRecord
 {
+    
     /**
      * {@inheritdoc}
      */
@@ -32,7 +33,11 @@ class NewsletterAttachment extends \yii\db\ActiveRecord
         return [
             [['message_id', 'file_name'], 'required'],
             [['message_id', 'mode'], 'integer'],
-            [['file_name'], 'string', 'max' => 255],
+            [['file'], 'file', 
+                'skipOnEmpty' => false, 
+                'extensions' => $this->module->params['allowed_attachment_extensions']
+                'maxSize' => ini_get('upload_max_filesize'),
+            ],
             [['message_id'], 'exist', 'skipOnError' => true, 'targetClass' => NewsletterMessage::class, 'targetAttribute' => ['message_id' => 'id']],
         ];
     }
@@ -58,5 +63,18 @@ class NewsletterAttachment extends \yii\db\ActiveRecord
     public function getMessage()
     {
         return $this->hasOne(NewsletterMessage::class, ['id' => 'message_id']);
+    }
+
+    /**
+     * Upload file
+     */
+    public function upload()
+    {
+        if ($this->validate()) {
+            $this->file->saveAs('uploads/' . $this->file->baseName . '.' . $this->file->extension);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

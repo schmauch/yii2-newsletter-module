@@ -77,7 +77,9 @@ class MessageController extends Controller
         $model = new NewsletterMessage();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
+            $model->file = UploadedFile::getInsctance($model, 'file');
+            
+            if ($model->upload() && $model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {

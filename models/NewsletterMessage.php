@@ -21,6 +21,12 @@ use Yii;
  */
 class NewsletterMessage extends \yii\db\ActiveRecord
 {
+
+    /**
+     * Properties that are stored to file
+     */
+    public $html, $text;
+    
     /**
      * {@inheritdoc}
      */
@@ -39,7 +45,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             [['send_at', 'completed_at'], 'safe'],
             [['send_at', 'completed_at'], 'datetime'],
             [['blacklisted'], 'integer'],
-            [['subject', 'html_file', 'text_file', 'template', 'recipients_file'], 'string', 'max' => 255],
+            [['recipients_file'], 'file', 'skipOnEmtpy' => true, 'extensions' => 'csv']
+            [['subject', 'html_file', 'text_file', 'template'], 'string', 'max' => 255],
         ];
     }
 
@@ -51,6 +58,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'subject' => 'Subject',
+            'html' => 'Html',
+            'text' => 'Plain Text',
             'html_file' => 'Html File',
             'text_file' => 'Text File',
             'template' => 'Template',

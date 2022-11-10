@@ -27,7 +27,7 @@ class m221110_103330_create_newsletter_tables extends Migration
         $this->createTable('newsletter_attachments', [
             'id' => $this->primaryKey(),
             'message_id' => $this->integer()->notNull(),
-            'file_name' => $this->string()->notNull(),
+            'file' => $this->string()->notNull(),
             'mode' => $this->integer()
         ]);
         
