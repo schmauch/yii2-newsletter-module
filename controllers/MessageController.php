@@ -80,7 +80,7 @@ class MessageController extends Controller
         if ($this->request->isPost) {
             $model->recipients_file = UploadedFile::getInstance($model, 'recipients_file');
             
-            if ($model->upload() && $model->load($this->request->post()) && $model->save()) {
+            if ($model->uploadRecipientFile() && $model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {

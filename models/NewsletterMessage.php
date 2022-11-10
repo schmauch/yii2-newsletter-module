@@ -79,4 +79,19 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     {
         return $this->hasMany(NewsletterAttachment::class, ['message_id' => 'id']);
     }
+    
+    
+    /**
+     * Upload recipient_file
+     */
+    public function uploadRecipientFile()
+    {
+        $path = $this->module->params['files_path'] . '/recipients/' . $this->getSlug() . '/' . 
+            $this->recipients_file->baseName . '.' . $this->recipients_file->extension;
+        if($this->validate('recipients_file')) {
+            $this->recipients_file->saveAs($fileName);
+        } else {
+            return false;
+        }
+    }
 }
