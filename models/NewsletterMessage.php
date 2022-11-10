@@ -28,6 +28,11 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     public $html, $text;
     
     /**
+     * Slug name (direcory) under which all files are stored
+     */
+    protected $slug;
+    
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -93,5 +98,14 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         } else {
             return false;
         }
+    }
+    
+    protected function getSlug()
+    {
+        if(!isset($this->slug)) {
+            $this->slug = uniqid();
+        }
+        
+        return $this->slug;
     }
 }
