@@ -4,9 +4,10 @@ namespace schmauch\newsletter\controllers;
 
 use schmauch\newsletter\models\NewsletterMessage;
 use schmauch\newsletter\models\NewsletterMessageSearch;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * MessageController implements the CRUD actions for NewsletterMessage model.
