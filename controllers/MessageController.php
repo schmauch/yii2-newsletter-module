@@ -33,7 +33,8 @@ class MessageController extends Controller
     
     public function actionFoo()
     {
-        echo $this->params['files_path'];
+        $module = \schmauch\newsletter\Module::getInstance();
+        echo $module->params['files_path'];
         echo 'fertig.';
     }
 
