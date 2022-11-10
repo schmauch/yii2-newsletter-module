@@ -33,7 +33,7 @@ class MessageController extends Controller
     
     public function actionFoo()
     {
-        echo $this->getParam('files_path');
+        echo $this->params['files_path'];
         echo 'fertig.';
     }
 
