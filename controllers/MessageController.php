@@ -3,7 +3,7 @@
 namespace schmauch\newsletter\controllers;
 
 use schmauch\newsletter\models\NewsletterMessage;
-use schmauch\newsletter\NewsletterMessageSearch;
+use schmauch\newsletter\models\NewsletterMessageSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
