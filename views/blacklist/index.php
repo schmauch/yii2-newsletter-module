@@ -1,24 +1,24 @@
 <?php
 
-use common\models\NewsletterMessage;
+use common\models\NewsletterBlacklist;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 
 /** @var yii\web\View $this */
-/** @var common\NewsletterMessageSearch $searchModel */
+/** @var common\NewsletterBlacklistSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Newsletter Messages';
+$this->title = 'Newsletter Blacklists';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="newsletter-message-index">
+<div class="newsletter-blacklist-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Newsletter Message', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Newsletter Blacklist', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -30,17 +30,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'subject',
-            'html_file',
-            'text_file',
-            'template',
-            //'recipients_file',
-            //'send_at',
-            //'completed_at',
-            //'blacklisted',
+            'email:email',
+            'added_at',
             [
                 'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, NewsletterMessage $model, $key, $index, $column) {
+                'urlCreator' => function ($action, NewsletterBlacklist $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
             ],

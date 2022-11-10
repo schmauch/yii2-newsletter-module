@@ -2,16 +2,16 @@
 
 namespace schmauch\newsletter\controllers;
 
-use schmauch\newsletter\models\NewsletterMessage;
-use schmauch\newsletter\NewsletterMessageSearch;
+use schmauch\newsletter\models\NewsletterBlacklist;
+use schmauch\newsletter\NewsletterBlacklistSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * MessageController implements the CRUD actions for NewsletterMessage model.
+ * BlacklistController implements the CRUD actions for NewsletterBlacklist model.
  */
-class MessageController extends Controller
+class BlacklistController extends Controller
 {
     /**
      * @inheritDoc
@@ -32,13 +32,13 @@ class MessageController extends Controller
     }
 
     /**
-     * Lists all NewsletterMessage models.
+     * Lists all NewsletterBlacklist models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new NewsletterMessageSearch();
+        $searchModel = new NewsletterBlacklistSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -48,7 +48,7 @@ class MessageController extends Controller
     }
 
     /**
-     * Displays a single NewsletterMessage model.
+     * Displays a single NewsletterBlacklist model.
      * @param int $id ID
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
@@ -61,13 +61,13 @@ class MessageController extends Controller
     }
 
     /**
-     * Creates a new NewsletterMessage model.
+     * Creates a new NewsletterBlacklist model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
     public function actionCreate()
     {
-        $model = new NewsletterMessage();
+        $model = new NewsletterBlacklist();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -83,7 +83,7 @@ class MessageController extends Controller
     }
 
     /**
-     * Updates an existing NewsletterMessage model.
+     * Updates an existing NewsletterBlacklist model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -103,7 +103,7 @@ class MessageController extends Controller
     }
 
     /**
-     * Deletes an existing NewsletterMessage model.
+     * Deletes an existing NewsletterBlacklist model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
      * @return \yii\web\Response
@@ -117,15 +117,15 @@ class MessageController extends Controller
     }
 
     /**
-     * Finds the NewsletterMessage model based on its primary key value.
+     * Finds the NewsletterBlacklist model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param int $id ID
-     * @return NewsletterMessage the loaded model
+     * @return NewsletterBlacklist the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = NewsletterMessage::findOne(['id' => $id])) !== null) {
+        if (($model = NewsletterBlacklist::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
