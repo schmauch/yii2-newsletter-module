@@ -91,8 +91,10 @@ class NewsletterMessage extends \yii\db\ActiveRecord
      */
     public function uploadRecipientFile()
     {
-        $path = $this->module->params['files_path'] . '/recipients/' . $this->getSlug() . '/' . 
+        $fileName = \schmauch\newsletter\Module::getInstance()->params['files_path'] . 
+            '/recipients/' . $this->getSlug() . '/' . 
             $this->recipients_file->baseName . '.' . $this->recipients_file->extension;
+            
         if($this->validate('recipients_file')) {
             $this->recipients_file->saveAs($fileName);
         } else {
