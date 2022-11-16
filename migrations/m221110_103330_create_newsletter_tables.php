@@ -14,6 +14,7 @@ class m221110_103330_create_newsletter_tables extends Migration
     {
         $this->createTable('newsletter_messages', [
             'id' => $this->primaryKey(),
+            'slug' => $this->string()->unique(),
             'subject' => $this->string()->notNull(),
             'html_file' => $this->string(),
             'text_file' => $this->string(),

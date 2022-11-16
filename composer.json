@@ -5,5 +5,8 @@
             "schmauch\\newsletter\\": ""
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "require": {
+        "yiisoft/yii2-queue": "*"
+    }
 }

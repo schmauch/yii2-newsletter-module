@@ -50,7 +50,11 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             [['send_at', 'completed_at'], 'safe'],
             [['send_at', 'completed_at'], 'datetime'],
             [['blacklisted'], 'integer'],
-            [['recipients_file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'csv'],
+            [['recipients_file'], 'file', 
+                'skipOnEmpty' => true, 
+                'extensions' => 'csv',
+                'mimeTypes' => 'text/plain, text/csv'
+            ],
             [['subject', 'html_file', 'text_file', 'template'], 'string', 'max' => 255],
         ];
     }
@@ -90,18 +94,18 @@ class NewsletterMessage extends \yii\db\ActiveRecord
      * Upload recipient_file
      */
     public function uploadRecipientFile()
-    {
-        $fileName = \schmauch\newsletter\Module::getInstance()->params['files_path'] . 
-            '/recipients/' . $this->getSlug() . '/' . 
-            $this->recipients_file->baseName . '.' . $this->recipients_file->extension;
-            
-        if($this->validate('recipients_file')) {
-            $this->recipients_file->saveAs($fileName);
-        } else {
-            return false;
-        }
+    { 
+        $fileName = $this->getNewsletterFilesPath() . '/recipients/' . $this->recipients_file->baseName . '.' . $this->recipients_file->extension;
+                
+        $this->recipients_file->saveAs($fileName);
+        
+        return true;
     }
     
+    
+    /**
+     * //...
+     */
     protected function getSlug()
     {
         if(!isset($this->slug)) {
@@ -110,4 +114,20 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         
         return $this->slug;
     }
+    
+    /**
+     * //...
+     */
+    protected function getNewsletterFilesPath()
+    {
+        $path = \schmauch\newsletter\Module::getInstance()->params['files_path'] . 
+            '/' . $this->getSlug() . '/';
+        
+        if(!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+        
+        return $path;
+    }
+    
 }

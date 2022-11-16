@@ -34,9 +34,35 @@ class MessageController extends Controller
     
     public function actionFoo()
     {
-        $module = \schmauch\newsletter\Module::getInstance();
-        echo $module->params['files_path'];
-        echo 'fertig.';
+        $recipients = [
+            'Roger Schmutz' => 'mail@roger-schmutz.ch',
+            'Rotscher Schmutz' => 'info@freihand.ch',
+            'irgendwas' => 'keine@gültige-adresse',
+            'Roger' => 'info@schmutzkampagne.ch',
+        ];
+        
+        $queuemailer = \Yii::$app->queuemailer;
+        
+        foreach($recipients as $recipient) {
+            $message = $queuemailer->compose()
+                ->setFrom('roger@schmau.ch')
+                ->setTo($recipient)
+                ->setSubject('das ist ein erster Test')
+                ->setTextBody('Hier kommt ein erster Test!');
+            $queuemailer->send($message);
+        }
+        echo count($recipients) . ' Mails wurden der Queue (Job ID: ' . $queuemailer->getLastJobId() . ') hinzugefügt.';
+    }
+    
+    public function actionBar()
+    {
+        if(\Yii::$app->mailqueue->process()) {
+            echo "Mails erfolgreich verschickt";
+            return;
+        }
+        
+        echo "Fehler! Mails konnten nicht verschickt werden";
+        return;
     }
 
     /**
@@ -76,20 +102,25 @@ class MessageController extends Controller
     public function actionCreate()
     {
         $model = new NewsletterMessage();
+        
 
-        if ($this->request->isPost) {
+        if($this->request->isPost && $model->load($this->request->post())) {
+            
+            $model->slug = uniqid();
+            
             $model->recipients_file = UploadedFile::getInstance($model, 'recipients_file');
             
-            if ($model->uploadRecipientFile() && $model->load($this->request->post()) && $model->save()) {
+            if($model->uploadRecipientFile() && $model->save()) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
-        } else {
-            $model->loadDefaultValues();
         }
-
+        
+        $model->loadDefaultValues();
+        
         return $this->render('create', [
             'model' => $model,
         ]);
+
     }
 
     /**
