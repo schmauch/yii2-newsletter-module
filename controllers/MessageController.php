@@ -45,7 +45,13 @@ class MessageController extends Controller
         ];
         
         foreach($recipients as $recipient) {
-            $mailJob = new SendMailJob();
+            $mailJob = new SendMailJob([
+                'message' => [
+                    'text' => 'test-text.php', 
+                    'html' => 'test-html.php'
+                ],
+                'recipient' => $recipient,
+            ]);
             
             $module = \Yii::$app->controller->module;
             $module->queue->push($mailJob);
