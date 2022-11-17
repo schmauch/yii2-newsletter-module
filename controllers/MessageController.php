@@ -37,6 +37,8 @@ class MessageController extends Controller
     
     public function actionFoo()
     {
+        $subject = 'Das ist nur ein Test';
+        
         $recipients = [
             'Roger Schmutz' => 'mail@roger-schmutz.ch',
             'Rotscher Schmutz' => 'info@freihand.ch',
@@ -55,13 +57,14 @@ class MessageController extends Controller
                     'html' => 'test-html.php'
                 ],
                 'recipient' => $recipient,
+                'subject' => $subject,
             ]);
             
             $module = \Yii::$app->controller->module;
             $module->queue->push($mailJob);
         }
         
-        
+        print_r($module->queue);
         echo 'fertig.';
     }
     
