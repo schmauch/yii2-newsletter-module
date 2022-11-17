@@ -15,7 +15,7 @@ use yii\base\BaseObject;
 class SendMailJob extends BaseObject implements \yii\queue\JobInterface
 {
     public $message;
-    public $params;
+    public $params = [];
     public $recipient;
     public $subject;
     
@@ -24,14 +24,27 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
      */
     public function execute($queue)
     {
+        $module = \yii::$app->controller->module;
+        if(!is_a($module, '\yii\base\Module')) {
+            die('Kein Modul!');
+        }
+        
         $mailer = \Yii::$app->mailer;
+        if(!is_a($mailer, '\yii\mail\MailerInterface')) {
+            die('Kein Mailer!');
+        }
         
         $message = $mailer->compose($this->message, $this->params);
+        if(!is_a($message, '\yii\mail\MessageInterface')) {
+            die('Keine Message!');
+        }
+        
         $message->setTo($this->recipient);
         $message->setSubject($this->subject);
-        
-        print_r($message);
-        
-        return $mailer->send($message);
+        //$message->setFrom($module->params['from']);
+        $message->setFrom('mail@roger-schmutz.ch');
+        die(var_export(get_class_methods($mailer), true));
+        echo 'verarbeite '.$recipient;
+        return $mailer->sendMessage($message);
     }
 }

@@ -40,45 +40,56 @@ class MessageController extends Controller
         $subject = 'Das ist nur ein Test';
         
         $recipients = [
-            'Roger Schmutz' => 'mail@roger-schmutz.ch',
+            'Roger Schmutz' => 'r.schmutz@girardi.ch',
             'Rotscher Schmutz' => 'info@freihand.ch',
             'irgendwas' => 'keine@gültige-adresse',
             'Roger' => 'info@schmutzkampagne.ch',
         ];
         
+        $message = [
+            'text' => 'test-text', 
+            'html' => 'test-html'
+        ];
+        
+        $params = [];
+        
         foreach($recipients as $recipient) {
-            $f = fopen('P:\\www\\test\\yii\\frontend\\runtime\\mail\\'.$recipient, 'w');
-            fwrite($f, "Das ist nur ein Text");
-            fclose($f);
             
             $mailJob = new SendMailJob([
                 'message' => [
-                    'text' => 'test-text.php', 
-                    'html' => 'test-html.php'
+                    'text' => 'test-text', 
+                    'html' => 'test-html'
                 ],
                 'recipient' => $recipient,
                 'subject' => $subject,
+                'params' => $params,
             ]);
             
             $module = \Yii::$app->controller->module;
             $module->queue->push($mailJob);
+            
         }
         
-        print_r($module->queue);
         echo 'fertig.';
     }
     
     public function actionBar()
     {
-        if(\Yii::$app->mailqueue->process()) {
-            echo "Mails erfolgreich verschickt";
-            return;
-        }
+        $mailer = \Yii::$app->mailer;
+        $message = $mailer->compose([
+            'text' => 'test-text',
+            'html' => 'test-html'
+        ], ['vorname' => 'Roger', 'name' => 'Schmutz', 'anrede' => 'Herr']);
+        $message->setTo('roger@schmau.ch');
+        $message->setFrom('mail@roger-schmutz.ch');
+        $message->setSubject('Das ist ein Test');
+        $message->setTextBody('Das ist ein Test. Mal sehen, ob das ankommt...');
         
-        echo "Fehler! Mails konnten nicht verschickt werden";
-        return;
+        $mailer->send($message);
+        
     }
-
+    
+    
     /**
      * Lists all NewsletterMessage models.
      *
