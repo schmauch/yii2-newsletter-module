@@ -45,6 +45,10 @@ class MessageController extends Controller
         ];
         
         foreach($recipients as $recipient) {
+            $f = fopen('P:\\www\\test\\yii\\frontend\\runtime\\mail\\'.$recipient, 'w');
+            fwrite($f, "Das ist nur ein Text");
+            fclose($f);
+            
             $mailJob = new SendMailJob([
                 'message' => [
                     'text' => 'test-text.php', 
