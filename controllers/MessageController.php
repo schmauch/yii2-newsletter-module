@@ -4,6 +4,9 @@ namespace schmauch\newsletter\controllers;
 
 use schmauch\newsletter\models\NewsletterMessage;
 use schmauch\newsletter\models\NewsletterMessageSearch;
+use schmauch\newsletter\jobs\SendMailJob;
+
+
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -41,17 +44,15 @@ class MessageController extends Controller
             'Roger' => 'info@schmutzkampagne.ch',
         ];
         
-        $queuemailer = \Yii::$app->queuemailer;
-        
         foreach($recipients as $recipient) {
-            $message = $queuemailer->compose()
-                ->setFrom('roger@schmau.ch')
-                ->setTo($recipient)
-                ->setSubject('das ist ein erster Test')
-                ->setTextBody('Hier kommt ein erster Test!');
-            $queuemailer->send($message);
+            $mailJob = new SendMailJob();
+            
+            $module = \Yii::$app->controller->module;
+            $module->queue->push($mailJob);
         }
-        echo count($recipients) . ' Mails wurden der Queue (Job ID: ' . $queuemailer->getLastJobId() . ') hinzugefügt.';
+        
+        
+        echo 'fertig.';
     }
     
     public function actionBar()
