@@ -2,7 +2,7 @@
 
 namespace schmauch\newsletter;
 
-class Module extends \yii\base\Module
+class Module extends \yii\base\Module implements \yii\base\BootstrapInterface
 {
     public $files_path;
     
@@ -15,6 +15,13 @@ class Module extends \yii\base\Module
         
         if(empty($this->files_path)) {
             $this->files_path = $this->params['files_path'];
+        }
+    }
+
+    public function bootstrap($app)
+    {
+        if ($app instanceof \yii\console\Application) {
+            $this->controllerNamespace = 'schmauch\newsletter\commands';
         }
     }
 }

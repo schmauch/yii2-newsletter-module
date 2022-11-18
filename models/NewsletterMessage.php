@@ -95,9 +95,9 @@ class NewsletterMessage extends \yii\db\ActiveRecord
      */
     public function uploadRecipientFile()
     { 
-        $fileName = $this->getNewsletterFilesPath() . '/recipients/' . $this->recipients_file->baseName . '.' . $this->recipients_file->extension;
+        $fileName = $this->getNewsletterFilesPath() . '/' . $this->recipients_file->baseName . '.' . $this->recipients_file->extension;
                 
-        $this->recipients_file->saveAs($fileName);
+        $this->recipients_file->saveAs($fileName, false);
         
         return true;
     }

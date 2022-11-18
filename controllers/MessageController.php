@@ -75,18 +75,17 @@ class MessageController extends Controller
     
     public function actionBar()
     {
-        $mailer = \Yii::$app->mailer;
-        $message = $mailer->compose([
-            'text' => 'test-text',
-            'html' => 'test-html'
-        ], ['vorname' => 'Roger', 'name' => 'Schmutz', 'anrede' => 'Herr']);
-        $message->setTo('roger@schmau.ch');
-        $message->setFrom('mail@roger-schmutz.ch');
-        $message->setSubject('Das ist ein Test');
-        $message->setTextBody('Das ist ein Test. Mal sehen, ob das ankommt...');
+        //$command = realpath(\Yii::getAlias('@app/../yii'));
+        //$command .= ' newsletter/console/run';
+        //echo $command;
         
-        $mailer->send($message);
+        //exec($command, $output, $exit);
         
+        //$console = $this->
+        $this->module->queue->run(false);
+        
+        //echo var_export($exit, true);
+        //echo var_export($output, true);
     }
     
     
