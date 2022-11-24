@@ -87,7 +87,7 @@ class BlacklistController extends Controller
 
         if ($this->request->isPost) {
             $model->email = $this->request->post('email');
-            $model->added_at = \DateTime::getTimestamp();
+            $model->added_at = time();
             if($model->validate() && $model->save()) {
                 return $this->redirect(['success', 'email' => $model->email]);
             } else {
