@@ -7,6 +7,7 @@ use schmauch\newsletter\models\NewsletterBlacklistSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * BlacklistController implements the CRUD actions for NewsletterBlacklist model.
