@@ -86,12 +86,12 @@ class BlacklistController extends Controller
         $model = new NewsletterBlacklist();
 
         if ($this->request->isPost) {
-            $model->email = $this->request->post('email');
+            $model->email = $this->request->post()['email'];
             $model->added_at = date('c');
             if($model->validate() && $model->save()) {
                 return $this->redirect(['success', 'email' => $model->email]);
             } else {
-                Session::addFlash('Die E-Mail-Adresse '.$model->email.' konnte nicht zur Blacklist hinzugefügt werden.');
+                //Session::addFlash('Die E-Mail-Adresse '.$model->email.' konnte nicht zur Blacklist hinzugefügt werden.');
             }
         }
         
