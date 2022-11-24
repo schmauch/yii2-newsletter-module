@@ -35,6 +35,11 @@ class BlacklistController extends Controller
                             'allow' => true,
                             'roles' => ['@'],
                         ],
+                        [
+                            'allow' => true,
+                            'actions' => 'create',
+                            'roles' => '?',
+                        ],
                     ],
                 ],            
             ],
@@ -75,16 +80,16 @@ class BlacklistController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
+    public function actionCreate($email = null)
     {
         $model = new NewsletterBlacklist();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            $model->email = $this->request->post('email');
+            $model->added_at = new DateTime();
+            if($model->validate() && $model->save()) {
+                return $this->redirect(['success', 'id' => $model->id]);
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
