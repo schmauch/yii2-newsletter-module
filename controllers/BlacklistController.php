@@ -94,6 +94,9 @@ class BlacklistController extends Controller
                 Session::addFlash('Die E-Mail-Adresse '.$model->email.' konnte nicht zur Blacklist hinzugefügt werden.');
             }
         }
+        
+        $model->email = $model->email ?? $email; 
+        
 
         return $this->render('create', [
             'model' => $model,
