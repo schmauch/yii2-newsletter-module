@@ -6,6 +6,7 @@ use schmauch\newsletter\models\NewsletterBlacklist;
 use schmauch\newsletter\models\NewsletterBlacklistSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Session;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
@@ -90,7 +91,7 @@ class BlacklistController extends Controller
             if($model->validate() && $model->save()) {
                 return $this->redirect(['success', 'email' => $model->email]);
             } else {
-                return $this->render('create', 'model' => $model);
+                Session::addFlash('Die E-Mail-Adresse '.$model->email.' konnte nicht zur Blacklist hinzugefügt werden.');
             }
         }
 
