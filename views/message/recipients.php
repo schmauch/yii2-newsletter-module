@@ -28,12 +28,12 @@ use yii\grid\GridView;
             //'send_at',
             //'completed_at',
             //'blacklisted',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
+            //[
+            //    'class' => ActionColumn::className(),
+            //    'urlCreator' => function ($action, $model, $key, $index, $column) {
+            //        return Url::toRoute([$action, 'id' => $model->id]);
+            //     }
+            //],
         ],
     ]); ?>
 
