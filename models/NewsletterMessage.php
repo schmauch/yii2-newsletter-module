@@ -8,29 +8,19 @@ use Yii;
  * This is the model class for table "newsletter_messages".
  *
  * @property int $id
+ * @property string $slug
  * @property string $subject
- * @property string|null $html_file
- * @property string|null $text_file
  * @property string|null $template
- * @property string|null $recipients_file
+ * @property blob $recipients_object
  * @property string|null $send_at
  * @property string|null $completed_at
+ * @property int|null $mails_sent
  * @property int|null $blacklisted
  *
  * @property NewsletterAttachment[] $newsletterAttachments
  */
 class NewsletterMessage extends \yii\db\ActiveRecord
 {
-
-    /**
-     * Properties that are stored to file
-     */
-    public $html, $text;
-    
-    /**
-     * Slug name (direcory) under which all files are stored
-     */
-    protected $slug;
     
     /**
      * {@inheritdoc}
@@ -46,16 +36,25 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['slug'], 'string'],
             [['subject'], 'required'],
             [['send_at', 'completed_at'], 'safe'],
             [['send_at', 'completed_at'], 'datetime'],
             [['blacklisted'], 'integer'],
-            [['recipients_file'], 'file', 
-                'skipOnEmpty' => true, 
-                'extensions' => 'csv',
-                'mimeTypes' => 'text/plain, text/csv'
-            ],
-            [['subject', 'html_file', 'text_file', 'template'], 'string', 'max' => 255],
+            [['recipients_object'], 'string'],
+            [['subject', 'template'], 'string', 'max' => 255],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function actions()
+    {
+        return [
+            'content-tools-image-upload' => \bizley\contenttools\actions\UploadAction::className(),
+            'content-tools-image-insert' => \bizley\contenttools\actions\InsertAction::className(),
+            'content-tools-image-rotate' => \bizley\contenttools\actions\RotateAction::className(),
         ];
     }
 
@@ -66,13 +65,10 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'slug' => 'Slug',
             'subject' => 'Subject',
-            'html' => 'Html',
-            'text' => 'Plain Text',
-            'html_file' => 'Html File',
-            'text_file' => 'Text File',
             'template' => 'Template',
-            'recipients_file' => 'Recipients File',
+            'recipients_object' => 'Recipients Object',
             'send_at' => 'Send At',
             'completed_at' => 'Completed At',
             'blacklisted' => 'Blacklisted',
@@ -89,19 +85,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         return $this->hasMany(NewsletterAttachment::class, ['message_id' => 'id']);
     }
     
-    
-    /**
-     * Upload recipient_file
-     */
-    public function uploadRecipientFile()
-    { 
-        $fileName = $this->getNewsletterFilesPath() . '/' . $this->recipients_file->baseName . '.' . $this->recipients_file->extension;
-                
-        $this->recipients_file->saveAs($fileName, false);
         
-        return true;
-    }
-    
     
     /**
      * //...

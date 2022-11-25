@@ -31,8 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'subject',
-            'html_file',
-            'text_file',
             'template',
             //'recipients_file',
             //'send_at',

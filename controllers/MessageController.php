@@ -6,6 +6,7 @@ use schmauch\newsletter\models\NewsletterMessage;
 use schmauch\newsletter\models\NewsletterMessageSearch;
 use schmauch\newsletter\jobs\SendMailJob;
 
+use gri3li\yii2csvdataprovider\CsvDataProvider;
 
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -37,40 +38,22 @@ class MessageController extends Controller
     
     public function actionFoo()
     {
-        $subject = 'Das ist nur ein Test';
+        $dataProvider = new CsvDataProvider([
+            'filename' => \Yii::getAlias('@vendor/schmauch/yii2-newsletter-module/mail/6377af159ba1f/test.csv'),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
         
-        $recipients = [
-            'Roger Schmutz' => 'r.schmutz@girardi.ch',
-            'Rotscher Schmutz' => 'info@freihand.ch',
-            'irgendwas' => 'keine@gültige-adresse',
-            'Roger' => 'info@schmutzkampagne.ch',
-        ];
+        $pages = ceil($dataProvider->getTotalCount()/$dataProvider->pagination->pageSize);
         
-        $message = [
-            'text' => 'test-text', 
-            'html' => 'test-html'
-        ];
-        
-        $params = [];
-        
-        foreach($recipients as $recipient) {
-            
-            $mailJob = new SendMailJob([
-                'message' => [
-                    'text' => 'test-text', 
-                    'html' => 'test-html'
-                ],
-                'recipient' => $recipient,
-                'subject' => $subject,
-                'params' => $params,
-            ]);
-            
-            $module = \Yii::$app->controller->module;
-            $module->queue->push($mailJob);
-            
+        for($i=0;$i<$pages;$i++) {
+            $dataProvider->pagination->page = $i;
+            $dataProvider->refresh();
+            $data[$i] = $dataProvider->getModels();
         }
         
-        echo 'fertig.';
+        return $this->render('recipients', ['data' => $data]);
     }
     
     public function actionBar()
@@ -85,8 +68,14 @@ class MessageController extends Controller
         
         echo var_export($exit, true);
         echo var_export($output, true);
+        
     }
     
+    
+    public function actionBaz()
+    {
+        return $this->render('content');
+    }
     
     /**
      * Lists all NewsletterMessage models.
@@ -127,14 +116,15 @@ class MessageController extends Controller
         $model = new NewsletterMessage();
         
 
-        if($this->request->isPost && $model->load($this->request->post())) {
+        if ($this->request->isPost) {
             
             $model->slug = uniqid();
             
-            $model->recipients_file = UploadedFile::getInstance($model, 'recipients_file');
-            
-            if($model->uploadRecipientFile() && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post()) && $model->save()) {
+
+                $this->createDirectory($model->slug);
+                
+                return $this->redirect(['update', 'id' => $model->id]);
             }
         }
         
@@ -178,6 +168,16 @@ class MessageController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+    
+    
+    protected function createDirectory($slug)
+    {
+        $path = $this->module->params['files_path'] . '/' . $slug;
+        if (!mkdir($path, 0666, true)) {
+            throw new Exception('Verzeichnis konnte nicht erstellt werden.'); 
+        }
+        return true;
     }
 
     /**

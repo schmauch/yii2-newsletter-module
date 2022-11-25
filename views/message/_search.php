@@ -19,10 +19,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'subject') ?>
 
-    <?= $form->field($model, 'html_file') ?>
-
-    <?= $form->field($model, 'text_file') ?>
-
     <?= $form->field($model, 'template') ?>
 
     <?php // echo $form->field($model, 'recipients_file') ?>
