@@ -39,7 +39,7 @@ class MessageController extends Controller
     public function actionFoo()
     {
         $dataProvider = new CsvDataProvider([
-            'filename' = '@schmauch/yii2-newsletter-module/mail/6377af159ba1f/recipients.csv',
+            'filename' => '@schmauch/yii2-newsletter-module/mail/6377af159ba1f/recipients.csv',
             'pagination' => [
                 'pageSize' => 10,
             ]
