@@ -16,10 +16,8 @@ class m221110_103330_create_newsletter_tables extends Migration
             'id' => $this->primaryKey(),
             'slug' => $this->string()->unique(),
             'subject' => $this->string()->notNull(),
-            'html_file' => $this->string(),
-            'text_file' => $this->string(),
             'template' => $this->string(),
-            'recipients_file' => $this->string(),
+            'recipients_object' => $this->text(),
             'send_at' => $this->datetime(),
             'completed_at' => $this->datetime(),
             'blacklisted' => $this->integer()

@@ -39,13 +39,21 @@ class MessageController extends Controller
     public function actionFoo()
     {
         $dataProvider = new CsvDataProvider([
-            'filename' => \Yii::getAlias('@vendor/schmauch/yii2-newsletter-module/mail/6377af159ba1f/recipients.csv'),
+            'filename' => \Yii::getAlias('@vendor/schmauch/yii2-newsletter-module/mail/6377af159ba1f/test.csv'),
             'pagination' => [
                 'pageSize' => 10,
-            ]
+            ],
         ]);
         
-        return $this->render('recipients', ['dataProvider' => $dataProvider]);
+        $pages = ceil($dataProvider->getTotalCount()/$dataProvider->pagination->pageSize);
+        
+        for($i=0;$i<$pages;$i++) {
+            $dataProvider->pagination->page = $i;
+            $dataProvider->refresh();
+            $data[$i] = $dataProvider->getModels();
+        }
+        
+        return $this->render('recipients', ['data' => $data]);
     }
     
     public function actionBar()
@@ -60,8 +68,14 @@ class MessageController extends Controller
         
         echo var_export($exit, true);
         echo var_export($output, true);
+        
     }
     
+    
+    public function actionBaz()
+    {
+        return $this->render('content');
+    }
     
     /**
      * Lists all NewsletterMessage models.
@@ -102,14 +116,15 @@ class MessageController extends Controller
         $model = new NewsletterMessage();
         
 
-        if($this->request->isPost && $model->load($this->request->post())) {
+        if ($this->request->isPost) {
             
             $model->slug = uniqid();
             
-            $model->recipients_file = UploadedFile::getInstance($model, 'recipients_file');
-            
-            if($model->uploadRecipientFile() && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post()) && $model->save()) {
+
+                $this->createDirectory($model->slug);
+                
+                return $this->redirect(['update', 'id' => $model->id]);
             }
         }
         
@@ -153,6 +168,16 @@ class MessageController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+    
+    
+    protected function createDirectory($slug)
+    {
+        $path = $this->module->params['files_path'] . '/' . $slug;
+        if (!mkdir($path, 0666, true)) {
+            throw new Exception('Verzeichnis konnte nicht erstellt werden.'); 
+        }
+        return true;
     }
 
     /**

@@ -18,7 +18,7 @@ class NewsletterMessageSearch extends NewsletterMessage
     {
         return [
             [['id', 'blacklisted'], 'integer'],
-            [['subject', 'html_file', 'text_file', 'template', 'recipients_file', 'send_at', 'completed_at'], 'safe'],
+            [['subject', 'template', 'recipients_object', 'send_at', 'completed_at'], 'safe'],
         ];
     }
 
@@ -65,10 +65,8 @@ class NewsletterMessageSearch extends NewsletterMessage
         ]);
 
         $query->andFilterWhere(['like', 'subject', $this->subject])
-            ->andFilterWhere(['like', 'html_file', $this->html_file])
-            ->andFilterWhere(['like', 'text_file', $this->text_file])
             ->andFilterWhere(['like', 'template', $this->template])
-            ->andFilterWhere(['like', 'recipients_file', $this->recipients_file]);
+            ->andFilterWhere(['like', 'recipients_object', $this->recipients_object]);
 
         return $dataProvider;
     }

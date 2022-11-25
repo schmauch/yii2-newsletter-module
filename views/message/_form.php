@@ -13,13 +13,7 @@ use yii\widgets\ActiveForm;
     <?php $form = ActiveForm::begin(); ?>
 
     <?= $form->field($model, 'subject')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'recipients_file')->fileInput() ?>
-
-    <?= $form->field($model, 'html')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'text')->textInput(['maxlength' => true]) ?>
-
+    
     <?= $form->field($model, 'template')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'send_at')->textInput() ?>

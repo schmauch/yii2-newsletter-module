@@ -14,13 +14,44 @@ use yii\grid\DataColumn;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
+    <?php
+        print_r($data);
+        $nav ='<ul class="nav nav-tabs">';
+        $content ='<div class="tab-content">';
+        
+        foreach($data as $index => $page) {
+            $active = $index == 0 ? ' active' : '';
+            $nav .= '
+                <li><a data-toggle="tab" href="#page' . $index . '">
+                    Seite ' . $index + 1 . '</a></li>';
+            $content .= '
+            <div id="page' . $index . '" class="tab-pane fade ' . $active . '">';
+            foreach($page as $model) {
+                $content .= '<div class="row">';
+                foreach($model as $column) {
+                    $content .= '<div class="col-3">'.$column.'</div>';
+                }
+                $content .= '</div>
+                ';
+            }
+            $content .= '</div>';
+        }
+        $content .= '
+            </div>';
+        $nav .= '</ul>';
+        
+        echo $nav;
+        echo $content;
+    ?>
+
+    <?php /*= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             [
                 'class' => DataColumn::class,
+                'label' => 'überschrift',
                 'content' => function($model, $key, $index, $column) {
                     return var_export($model, true);
                 }
@@ -41,7 +72,7 @@ use yii\grid\DataColumn;
             //     }
             //],
         ],
-    ]); ?>
+    ]); */?>
 
 
 </div>
