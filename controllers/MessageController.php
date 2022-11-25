@@ -6,7 +6,7 @@ use schmauch\newsletter\models\NewsletterMessage;
 use schmauch\newsletter\models\NewsletterMessageSearch;
 use schmauch\newsletter\jobs\SendMailJob;
 
-use gri3li\yii2-csvdataprovider\CsvDataProvider;
+use gri3li\yii2csvdataprovider\CsvDataProvider;
 
 use yii\filters\VerbFilter;
 use yii\web\Controller;
