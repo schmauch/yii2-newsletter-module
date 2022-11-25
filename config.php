@@ -9,6 +9,7 @@ return [
             'channel' => 'default', 
             'mutex' => \yii\mutex\MysqlMutex::class,
             'as log' => \yii\queue\LogBehavior::class,
+            'deleteReleased' => false,
         ],
     ],
     'params' => [

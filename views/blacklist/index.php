@@ -1,6 +1,6 @@
 <?php
 
-use common\models\NewsletterBlacklist;
+use schmauch\newsletter\models\NewsletterBlacklist;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Newsletter Blacklist', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('E-Mail-Adresse der Blacklist hinzufügen', ['sign-off'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -27,13 +27,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
             'email:email',
             'added_at',
             [
                 'class' => ActionColumn::className(),
+                'template' => '{update} {delete}',
                 'urlCreator' => function ($action, NewsletterBlacklist $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }

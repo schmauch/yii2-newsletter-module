@@ -38,8 +38,8 @@ class BlacklistController extends Controller
                         ],
                         [
                             'allow' => true,
-                            'actions' => 'create',
-                            'roles' => '?',
+                            'actions' => ['sign-off'],
+                            'roles' => ['?'],
                         ],
                     ],
                 ],            
@@ -81,24 +81,31 @@ class BlacklistController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate($email = null)
+    public function actionSignOff($email = null)
     {
-        $model = new NewsletterBlacklist();
-
-        if ($this->request->isPost) {
-            $model->email = $this->request->post()['email'];
-            $model->added_at = date('c');
-            if($model->validate() && $model->save()) {
-                return $this->redirect(['success', 'email' => $model->email]);
-            } else {
-                //Session::addFlash('Die E-Mail-Adresse '.$model->email.' konnte nicht zur Blacklist hinzugefügt werden.');
-            }
+        $email = $this->request->post('NewsletterBlacklist')['email'] ?? $email;
+        
+        // if the address is already blacklisted, show success page
+        if ($email && $model = NewsletterBlacklist::findOne(['email' => $email])) {
+            return $this->render('success', ['model' => $model]);
         }
         
-        $model->email = $model->email ?? $email; 
+        // 
+        $model = new NewsletterBlacklist();
+        $model->email = $email;
         
+        if ($this->request->isPost) {
+            $model->added_at = date('c');
+            if(!$model->validate()) {
+                \Yii::$app->session->setFlash('error', 'Die E-Mail-Adresse ' . $model->email . ' konnte nicht aus der Liste entfernt werden.');
+            }
 
-        return $this->render('create', [
+            if($model->save()) {
+                return $this->redirect(['sign-off', 'email' => $email]);
+            }
+        }        
+
+        return $this->render('form', [
             'model' => $model,
         ]);
     }

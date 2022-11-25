@@ -51,8 +51,9 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         
         //$mailer->send($message);
 
-        sleep(300);
+        sleep(60);
         echo 'irgendwas!';
+        flush();
         Console::stdout(
             'verarbeite ' . 
             Console::ansiFormat($this->recipient, [Console::FG_GREEN]) . "\n");

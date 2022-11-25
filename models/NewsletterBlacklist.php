@@ -29,7 +29,7 @@ class NewsletterBlacklist extends \yii\db\ActiveRecord
         return [
             [['email', 'added_at'], 'required'],
             [['added_at'], 'safe'],
-            [['added_at'], 'datetime'],
+            //[['added_at'], 'datetime', 'format' => 'php:Y-m-d H:i:s'],
             [['email'], 'email'],
             [['email'], 'unique'],
         ];
@@ -42,8 +42,8 @@ class NewsletterBlacklist extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'email' => 'Email',
-            'added_at' => 'Added At',
+            'email' => 'E-Mail-Adresse',
+            'added_at' => 'abgemeldet am',
         ];
     }
 }

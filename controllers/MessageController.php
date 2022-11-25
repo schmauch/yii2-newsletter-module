@@ -75,17 +75,16 @@ class MessageController extends Controller
     
     public function actionBar()
     {
-        //$command = realpath(\Yii::getAlias('@app/../yii'));
-        //$command .= ' newsletter/console/run';
-        //echo $command;
+        $command = realpath(\Yii::getAlias('@app/../yii'));
+        $command .= ' newsletter/console/run &';
+        echo $command;
         
-        //exec($command, $output, $exit);
+        exec($command, $output, $exit);
         
-        //$console = $this->
-        $this->module->queue->run(false);
+        //$this->module->queue->run(false);
         
-        //echo var_export($exit, true);
-        //echo var_export($output, true);
+        echo var_export($exit, true);
+        echo var_export($output, true);
     }
     
     

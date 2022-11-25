@@ -6,13 +6,11 @@ use yii\widgets\ActiveForm;
 /** @var yii\web\View $this */
 /** @var common\models\NewsletterBlacklist $model */
 
-$this->title = 'Create Newsletter Blacklist';
-$this->params['breadcrumbs'][] = ['label' => 'Newsletter Blacklists', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Vom Newsletter abmelden | Arthur Girardi AG';
 ?>
 <div class="newsletter-blacklist-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1>Vom Newsletter abmelden</h1>
 
     <div class="newsletter-blacklist-form">
     
