@@ -6,6 +6,7 @@ use schmauch\newsletter\models\NewsletterMessage;
 use schmauch\newsletter\models\NewsletterMessageSearch;
 use schmauch\newsletter\jobs\SendMailJob;
 
+use gri3li\yii2-csvdataprovider\CsvDataProvider
 
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -37,40 +38,14 @@ class MessageController extends Controller
     
     public function actionFoo()
     {
-        $subject = 'Das ist nur ein Test';
+        $dataProvider = new CsvDataProvider([
+            'filename' = '@schmauch/yii2-newsletter-module/mail/6377af159ba1f/recipients.csv',
+            'pagination' => [
+                'pageSize' => 10,
+            ]
+        ]);
         
-        $recipients = [
-            'Roger Schmutz' => 'r.schmutz@girardi.ch',
-            'Rotscher Schmutz' => 'info@freihand.ch',
-            'irgendwas' => 'keine@gültige-adresse',
-            'Roger' => 'info@schmutzkampagne.ch',
-        ];
-        
-        $message = [
-            'text' => 'test-text', 
-            'html' => 'test-html'
-        ];
-        
-        $params = [];
-        
-        foreach($recipients as $recipient) {
-            
-            $mailJob = new SendMailJob([
-                'message' => [
-                    'text' => 'test-text', 
-                    'html' => 'test-html'
-                ],
-                'recipient' => $recipient,
-                'subject' => $subject,
-                'params' => $params,
-            ]);
-            
-            $module = \Yii::$app->controller->module;
-            $module->queue->push($mailJob);
-            
-        }
-        
-        echo 'fertig.';
+        return $this->render('recipients', ['dataProvider' => $dataProvider]);
     }
     
     public function actionBar()
