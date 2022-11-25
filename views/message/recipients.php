@@ -18,7 +18,12 @@ use yii\grid\GridView;
         //'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-
+            [
+                'class' => DataColumn::class,
+                'content' => function($model, $key, $index, $column) {
+                    return var_export($model, true);
+                }
+            ],
             //'id',
             //'subject',
             //'html_file',
