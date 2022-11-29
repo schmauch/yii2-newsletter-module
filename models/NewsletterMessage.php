@@ -12,15 +12,19 @@ use Yii;
  * @property string $subject
  * @property string|null $template
  * @property blob $recipients_object
- * @property string|null $send_at
- * @property string|null $completed_at
+ * @property string|null $send_date
+ * @property string|null $send_time
  * @property int|null $mails_sent
  * @property int|null $blacklisted
+ * @property string|null $completed_at
  *
  * @property NewsletterAttachment[] $newsletterAttachments
  */
 class NewsletterMessage extends \yii\db\ActiveRecord
 {
+    
+    public $html;
+    public $text;
     
     /**
      * {@inheritdoc}
@@ -38,23 +42,12 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         return [
             [['slug'], 'string'],
             [['subject'], 'required'],
-            [['send_at', 'completed_at'], 'safe'],
-            [['send_at', 'completed_at'], 'datetime'],
-            [['blacklisted'], 'integer'],
+            [['send_date', 'send_time', 'completed_at'], 'safe'],
+            [['send_date'] , 'date', 'format' => 'php:Y-m-d'],
+            [['send_time'] , 'time', 'format' => 'php:H:i:s'],
+            [['mails_sent', 'blacklisted'], 'integer'],
             [['recipients_object'], 'string'],
             [['subject', 'template'], 'string', 'max' => 255],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function actions()
-    {
-        return [
-            'content-tools-image-upload' => \bizley\contenttools\actions\UploadAction::className(),
-            'content-tools-image-insert' => \bizley\contenttools\actions\InsertAction::className(),
-            'content-tools-image-rotate' => \bizley\contenttools\actions\RotateAction::className(),
         ];
     }
 
@@ -74,6 +67,24 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             'blacklisted' => 'Blacklisted',
         ];
     }
+    
+    
+    
+    /**
+     * Gets the html content
+     */
+    public function getHtmlFile()
+    {
+        return \schmauch\newsletter\Module::getInstance()->params['files_path'] . $this->slug .'/message.html';
+    }
+
+    /**
+     * Gets the plain text content
+     */
+    public function getTextFile()
+    {
+        return \schmauch\newsletter\Module::getInstance()->params['files_path'] . $this->slug .'/message.txt';
+    }
 
     /**
      * Gets query for [[NewsletterAttachments]].
@@ -84,34 +95,5 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     {
         return $this->hasMany(NewsletterAttachment::class, ['message_id' => 'id']);
     }
-    
         
-    
-    /**
-     * //...
-     */
-    protected function getSlug()
-    {
-        if(!isset($this->slug)) {
-            $this->slug = uniqid();
-        }
-        
-        return $this->slug;
-    }
-    
-    /**
-     * //...
-     */
-    protected function getNewsletterFilesPath()
-    {
-        $path = \schmauch\newsletter\Module::getInstance()->params['files_path'] . 
-            '/' . $this->getSlug() . '/';
-        
-        if(!is_dir($path)) {
-            mkdir($path, 0777, true);
-        }
-        
-        return $path;
-    }
-    
 }

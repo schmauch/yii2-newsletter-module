@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
@@ -16,14 +17,15 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'template')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'send_at')->textInput() ?>
+    <?= $form->field($model, 'send_date')->input('date') ?>
+    
+    <?= $form->field($model, 'send_time')->input('time', ['value' => '00:00:00']) ?>
 
-    <?= $form->field($model, 'completed_at')->textInput() ?>
-
-    <?= $form->field($model, 'blacklisted')->textInput() ?>
+    
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Abbrechen', Url::previous(), ['class' => 'btn btn-secondary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

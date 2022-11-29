@@ -17,8 +17,8 @@ class NewsletterMessageSearch extends NewsletterMessage
     public function rules()
     {
         return [
-            [['id', 'blacklisted'], 'integer'],
-            [['subject', 'template', 'recipients_object', 'send_at', 'completed_at'], 'safe'],
+            [['id', 'blacklisted', 'mails_sent'], 'integer'],
+            [['subject', 'template', 'send_date', 'send_time', 'completed_at'], 'safe'],
         ];
     }
 
@@ -59,14 +59,15 @@ class NewsletterMessageSearch extends NewsletterMessage
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'send_at' => $this->send_at,
-            'completed_at' => $this->completed_at,
+            'send_date' => $this->send_date,
+            'send_time' => $this->send_time,
+            'mails_sent' => $this->mails_sent,
             'blacklisted' => $this->blacklisted,
+            'completed_at' => $this->completed_at,
         ]);
 
         $query->andFilterWhere(['like', 'subject', $this->subject])
-            ->andFilterWhere(['like', 'template', $this->template])
-            ->andFilterWhere(['like', 'recipients_object', $this->recipients_object]);
+            ->andFilterWhere(['like', 'template', $this->template]);
 
         return $dataProvider;
     }

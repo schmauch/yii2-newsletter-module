@@ -9,6 +9,7 @@ use schmauch\newsletter\jobs\SendMailJob;
 use gri3li\yii2csvdataprovider\CsvDataProvider;
 
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
@@ -36,6 +37,19 @@ class MessageController extends Controller
         );
     }
     
+    /**
+     * {@inheritdoc}
+     */
+    public function actions()
+    {
+        return [
+            'content-tools-image-upload' => \bizley\contenttools\actions\UploadAction::className(),
+            'content-tools-image-insert' => \bizley\contenttools\actions\InsertAction::className(),
+            'content-tools-image-rotate' => \bizley\contenttools\actions\RotateAction::className(),
+        ];
+    }
+
+
     public function actionFoo()
     {
         $dataProvider = new CsvDataProvider([
@@ -72,11 +86,6 @@ class MessageController extends Controller
     }
     
     
-    public function actionBaz()
-    {
-        return $this->render('content');
-    }
-    
     /**
      * Lists all NewsletterMessage models.
      *
@@ -84,6 +93,7 @@ class MessageController extends Controller
      */
     public function actionIndex()
     {
+        Url::remember();
         $searchModel = new NewsletterMessageSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
@@ -122,7 +132,9 @@ class MessageController extends Controller
             
             if ($model->load($this->request->post()) && $model->save()) {
 
-                $this->createDirectory($model->slug);
+                $this->initFileStructure($model->slug);
+                
+                \Yii::$app->session->setFlash('Newsletter erstellt.');              
                 
                 return $this->redirect(['update', 'id' => $model->id]);
             }
@@ -155,7 +167,62 @@ class MessageController extends Controller
             'model' => $model,
         ]);
     }
-
+    
+    
+    /**
+     * Edit the html message
+     */
+    public function actionEditHtml($id)
+    {
+        $model = $this->findModel($id);
+        
+        $htmlFile = $model->getHtmlFile();
+        
+        if($this->request->isPost) {
+            $html = $this->request->post('contentTools0');
+            if (false === file_put_contents($htmlFile, $html)) {
+                throw new Exception('Fehler beim Schreiben des HTML-Inhalts.');
+                return $this->asJson(['errors' => ['write' => 'Fehler beim Schreiben des HTML-Inhalts']]);
+            }
+            return $this->asJson(true);
+        }
+        
+        $model->html = file_get_contents($htmlFile);
+        return $this->render('edit-html', ['model' => $model]);
+    }
+    
+    
+    
+    /**
+     * Edit the plain text message
+     */
+    public function actionEditText($id, $loadFromHtml = false)
+    {
+        $model = $this->findModel($id);
+        
+        $htmlFile = $model->getHtmlFile();
+        $textFile = substr($htmlFile, 0, -4) . 'txt';
+        
+        if($this->request->isPost) {
+            $text = $this->request->post('NewsletterMessage')['text'];
+            if (false === file_put_contents($textFile, $text)) {
+                throw new Exception('Fehler beim Schreiben des Text-Inhalts.');
+                return $this->render('edit-text', ['model' => $model]);
+            }
+            return $this->redirect(['edit-text', 'id' => $id]);
+        }
+        
+        if ($loadFromHtml) {
+            $model->text = preg_replace('/\t+|\n\ +/', '', strip_tags(file_get_contents($htmlFile)));
+        } else {
+            $model->text = file_get_contents($textFile);
+        }
+        
+        return $this->render('edit-text', ['model' => $model]);
+    }
+    
+    
+    
     /**
      * Deletes an existing NewsletterMessage model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
@@ -171,15 +238,6 @@ class MessageController extends Controller
     }
     
     
-    protected function createDirectory($slug)
-    {
-        $path = $this->module->params['files_path'] . '/' . $slug;
-        if (!mkdir($path, 0666, true)) {
-            throw new Exception('Verzeichnis konnte nicht erstellt werden.'); 
-        }
-        return true;
-    }
-
     /**
      * Finds the NewsletterMessage model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -195,4 +253,56 @@ class MessageController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    
+    /**
+     * Initializes the file structure
+     */
+    protected function initFileStructure($slug)
+    {
+        $path = $this->module->params['files_path'];
+        
+        if (!is_dir($path)) {
+            throw new \yii\base\InvalidConfigException('Parameter `files_path` leads to an  non existing directory.');
+        }
+        
+        $path .= $slug . '/';
+        
+        if(!is_dir($path)) {
+            if (!mkdir($path, 0777, true)) {
+                throw new Exception('Verzeichnis konnte nicht erstellt werden.'); 
+            }
+            if (!is_writable($path) && !chmod($path, 0777)) {
+                throw new Exception('Verzeichnis ist nicht beschreibbar.');
+            }
+        }
+                
+        $htmlFile = $path . 'message.html';
+        $textFile = $path . 'message.txt';
+        $attachmentsDir = $path . 'attachments';
+        
+        // create an empty html file
+        if (!is_file($htmlFile)) {
+            if (!touch($htmlFile) || !chmod($htmlFile, 0666)) {
+                throw new Exception('Html File konnte nicht erstellt werden.');
+            }
+        }
+        
+        // create an empty text file
+        if (!is_file($textFile)) {
+            if (!touch($textFile) || !chmod($textFile, 0666)) {
+                throw new Exception('Text File konnte nicht erstellt werden.');
+            }
+        }
+        
+        // create the directory for attachments
+        if (!is_dir($attachmentsDir)) {
+            if (!mkdir($attachmentsDir, 0777, true)) {
+                throw new Exception('Attachmens-Verzeichnis konnte nicht erstellt werden.');
+            }
+            if (!is_writable($attachmentsDir) && !chmod($attachmentsDir, 0777)) {
+                throw new Exception('Verzeichnis ist nicht beschreibbar.');
+            }
+        }
+        
+    }    
 }

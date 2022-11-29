@@ -31,13 +31,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'subject',
-            'html_file',
-            'text_file',
             'template',
-            'recipients_file',
-            'send_at',
-            'completed_at',
+            'send_date',
+            'send_time',
+            'mails_sent',
             'blacklisted',
+            'completed_at',
         ],
     ]) ?>
 

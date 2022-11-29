@@ -32,10 +32,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'subject',
             'template',
-            //'recipients_file',
-            //'send_at',
-            //'completed_at',
-            //'blacklisted',
+            'send_date',
+            'send_time',
+            'mails_sent',
+            'blacklisted',
+            'completed_at',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, $model, $key, $index, $column) {

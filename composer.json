@@ -7,6 +7,7 @@
     },
     "minimum-stability": "dev",
     "require": {
-        "yiisoft/yii2-queue": "*"
+        "yiisoft/yii2-queue": "*",
+        "bizley/contenttools": "*"
     }
 }
