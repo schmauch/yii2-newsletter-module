@@ -23,9 +23,9 @@ use yii\widgets\ActiveForm;
 
     
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Abbrechen', Url::previous(), ['class' => 'btn btn-secondary']) ?>
+    <div class="form-group mt-3">
+        <?= Html::submitButton('Save', ['class' => 'btn btn-success mr-3']) ?>
+        <?= Html::a('Abbrechen', Url::previous(), ['class' => 'btn btn-dark mr-3']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

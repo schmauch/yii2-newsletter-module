@@ -4,6 +4,7 @@ namespace schmauch\newsletter\controllers;
 
 use schmauch\newsletter\models\NewsletterMessage;
 use schmauch\newsletter\models\NewsletterMessageSearch;
+use schmauch\newsletter\models\RecipientsInterface;
 use schmauch\newsletter\jobs\SendMailJob;
 
 use gri3li\yii2csvdataprovider\CsvDataProvider;
@@ -49,26 +50,6 @@ class MessageController extends Controller
         ];
     }
 
-
-    public function actionFoo()
-    {
-        $dataProvider = new CsvDataProvider([
-            'filename' => \Yii::getAlias('@vendor/schmauch/yii2-newsletter-module/mail/6377af159ba1f/test.csv'),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-        ]);
-        
-        $pages = ceil($dataProvider->getTotalCount()/$dataProvider->pagination->pageSize);
-        
-        for($i=0;$i<$pages;$i++) {
-            $dataProvider->pagination->page = $i;
-            $dataProvider->refresh();
-            $data[$i] = $dataProvider->getModels();
-        }
-        
-        return $this->render('recipients', ['data' => $data]);
-    }
     
     public function actionBar()
     {
@@ -102,20 +83,9 @@ class MessageController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
-
-    /**
-     * Displays a single NewsletterMessage model.
-     * @param int $id ID
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
+    
+    
+    
     /**
      * Creates a new NewsletterMessage model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -147,6 +117,8 @@ class MessageController extends Controller
         ]);
 
     }
+    
+    
 
     /**
      * Updates an existing NewsletterMessage model.
@@ -160,7 +132,8 @@ class MessageController extends Controller
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            \Yii::$app->session->setFlash('success', 'Newsletter gespeichert.');
+            return $this->redirect(['update', 'id' => $model->id]);
         }
 
         return $this->render('update', [
@@ -221,6 +194,77 @@ class MessageController extends Controller
         return $this->render('edit-text', ['model' => $model]);
     }
     
+    
+    
+    /**
+     *
+     */
+    public function actionChooseRecipients($id)
+    {
+        $model = $this->findModel($id);
+        
+        if ($this->request->isPost) {
+            
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['view-recipients', 'id' => $model->id]);
+            } else {
+                \Yii::$app->session->setFlash('error', 'Fehler beim Speichern.' . 
+                    implode("<br>", $model->errors)
+                );
+            }
+        }
+        
+        if (!empty($model->recipients_object)) {
+            $recipients_object = unserialize($model->recipients_object);
+        }
+        
+        
+        // Scan dir for possible options
+        $dir = $this->module->getBasePath().'/models/recipients/';
+        $objects = scandir($dir);
+        foreach($objects as $object) {
+            if (substr($object, 0, 1) == '.' || substr($object, -1) == '~') {
+                continue;
+            }
+            $options[substr($object, 0, -4)] = substr($object, 0, -14);
+        }
+        
+        return $this->render('choose-recipients', [
+            'model' => $model, 
+            'options' => $options]);
+    }
+    
+    
+    public function actionViewRecipients($id) 
+    {
+        $model = $this->findModel($id);
+        
+        $namespace = preg_replace('/controllers$/', 'models\\recipients\\', __NAMESPACE__);
+        $class = $namespace . $model->recipients_object;
+        $config = unserialize($model->recipients_config);
+        
+        if(class_exists($class)) {
+            $recipients_object = new $class($config);
+        }
+        //print_r($recipients_object->recipients);
+        //die();
+        $dataProvider = $recipients_object->getDataProvider();
+        $dataProvider->pagination->pagesize = 1;
+        
+        $columns = $recipients_object->getColumns();
+        //$pages = ceil($dataProvider->getTotalCount()/$dataProvider->pagination->pageSize);
+        
+        //for($i=0;$i<$pages;$i++) {
+        //    $dataProvider->pagination->page = $i;
+        //    $dataProvider->refresh();
+        //    $data[$i] = $dataProvider->getModels();
+        //}
+        
+        return $this->render('recipients', [
+            'dataProvider' => $dataProvider,
+            'columns' => $columns,
+        ]);
+    }
     
     
     /**

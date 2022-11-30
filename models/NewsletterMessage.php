@@ -41,7 +41,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     {
         return [
             [['slug'], 'string'],
-            [['subject'], 'required'],
+            //[['subject'], 'required' => $this->isNewRecord],
             [['send_date', 'send_time', 'completed_at'], 'safe'],
             [['send_date'] , 'date', 'format' => 'php:Y-m-d'],
             [['send_time'] , 'time', 'format' => 'php:H:i:s'],

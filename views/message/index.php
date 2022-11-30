@@ -11,7 +11,6 @@ use yii\grid\GridView;
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Newsletter Messages';
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="newsletter-message-index">
 
@@ -39,6 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'completed_at',
             [
                 'class' => ActionColumn::className(),
+                'template' => '{update} {delete}',
                 'urlCreator' => function ($action, $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
