@@ -206,18 +206,17 @@ class MessageController extends Controller
         if ($this->request->isPost) {
             
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view-recipients', 'id' => $model->id]);
+                if(!empty($model->recipients_config)) {
+                    return $this->redirect(['view-recipients', 'id' => $model->id]);
+                } else {
+                    return $this->redirect(['choose-recipients', 'id' => $model->id]);
+                }
             } else {
                 \Yii::$app->session->setFlash('error', 'Fehler beim Speichern.' . 
                     implode("<br>", $model->errors)
                 );
             }
         }
-        
-        if (!empty($model->recipients_object)) {
-            $recipients_object = unserialize($model->recipients_object);
-        }
-        
         
         // Scan dir for possible options
         $dir = $this->module->getBasePath().'/models/recipients/';
@@ -241,26 +240,19 @@ class MessageController extends Controller
         
         $namespace = preg_replace('/controllers$/', 'models\\recipients\\', __NAMESPACE__);
         $class = $namespace . $model->recipients_object;
-        $config = unserialize($model->recipients_config);
+        $config = !empty($model->recipients_config) ? unserialize($model->recipients_config) : [];
         
         if(class_exists($class)) {
             $recipients_object = new $class($config);
         }
-        //print_r($recipients_object->recipients);
-        //die();
+        
         $dataProvider = $recipients_object->getDataProvider();
         $dataProvider->pagination->pagesize = 1;
         
-        $columns = $recipients_object->getColumns();
-        //$pages = ceil($dataProvider->getTotalCount()/$dataProvider->pagination->pageSize);
-        
-        //for($i=0;$i<$pages;$i++) {
-        //    $dataProvider->pagination->page = $i;
-        //    $dataProvider->refresh();
-        //    $data[$i] = $dataProvider->getModels();
-        //}
+        $columns = $recipients_object->getColumns() ?? [];
         
         return $this->render('recipients', [
+            'model' => $model,
             'dataProvider' => $dataProvider,
             'columns' => $columns,
         ]);

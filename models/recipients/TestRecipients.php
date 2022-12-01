@@ -32,7 +32,16 @@ class TestRecipients extends Model implements RecipientsInterface
     
     public function getColumns()
     {
+        if(!is_array($this->recipients)) {
+            return [];
+        }
+        
         $recipient = reset($this->recipients);
+        
+        if(!is_array($recipient)) {
+            return [];
+        }
+        
         return array_keys($recipient);
     }
 

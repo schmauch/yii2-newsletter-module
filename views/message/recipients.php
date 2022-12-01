@@ -12,6 +12,8 @@ use yii\grid\DataColumn;
 
     <h1>Newsletter recipients</h1>
 
+    <?= $this->render('_nav', ['id' => $model->id]) ?>
+
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?php
