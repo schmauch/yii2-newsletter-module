@@ -4,12 +4,6 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
-
-/** @var yii\web\View $this */
-/** @var common\models\NewsletterMessage $model */
-
-$this->title = 'Bearbeite Newsletter: ' . $model->subject;
-
 ?>
 
 <div class="newsletter-message-update">
@@ -18,14 +12,14 @@ $this->title = 'Bearbeite Newsletter: ' . $model->subject;
 
 <?= $this->render('_nav', ['id' => $model->id]) ?>
 
+<h2>Art der Empfänger</h2>
+<p>Hier kann ausgewählt werden, wie die Empfänger bereit gestellt werden.</p>
+
 <?php $form = ActiveForm::begin(); ?>
 
-<?= $model->recipients_object; ?>
+<?= $form->field($model, 'recipients_object')->dropDownList($options)->label(false) ?>
 
-<?php 
-    echo $form->field($model, 'recipients_object')->listBox($options, ['size' => 1]) ?>
-
-<div class="form-group mt-3">
+<div class="form-group my-3">
     <?= Html::submitButton('Save', ['class' => 'btn btn-success mr-3']) ?>
     <?= Html::a('Abbrechen', Url::previous(), ['class' => 'btn btn-dark mr-3']) ?>
 </div>

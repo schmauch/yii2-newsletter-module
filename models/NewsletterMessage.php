@@ -95,5 +95,32 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     {
         return $this->hasMany(NewsletterAttachment::class, ['message_id' => 'id']);
     }
+    
+    
+    /**
+     *
+     */
+    public function getPlaceholders()
+    {
+        $pattern = '/\[\[([0-9A-Za-z_]+)\]\]/';
+        $html = file_get_contents($this->getHtmlFile());
+        $htmlCount = preg_match_all($pattern, $html, $htmlPlaceholders);
+
+        $text  = file_get_contents($this->getTextFile());
+        $textCount = preg_match_all($pattern, $text, $textPlaceholders);
         
+        
+        $diff = array_merge(
+            array_diff($htmlPlaceholders[1], $textPlaceholders[1]), 
+            array_diff($textPlaceholders[1], $htmlPlaceholders[1])
+        );
+        
+        if (!empty($diff)) {
+            \Yii::$app->session->addFlash('warning', 'Die verwendeten Platzhalter in der Html- und Text-Datei weichen voneinander ab.');
+        }
+
+        $placeholders = array_unique(array_merge($htmlPlaceholders[1], $textPlaceholders[1]));
+        
+        return $placeholders;
+    }
 }

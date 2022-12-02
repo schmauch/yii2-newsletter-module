@@ -1,0 +1,10 @@
+Hallo [[name]]
+
+
+Ich schreibe dir an die Adresse [[email]]
+
+
+[[produkt]]
+
+
+Tschüss

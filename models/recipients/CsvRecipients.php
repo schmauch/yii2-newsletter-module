@@ -3,6 +3,7 @@
 namespace schmauch\newsletter\models\recipients;
 
 use yii\base\Model;
+use yii\data\ArrayDataProvider;
 
 use gri3li\yii2csvdataprovider\CsvDataProvider;
 
@@ -26,13 +27,13 @@ class CsvRecipients extends Model implements RecipientsInterface
     
     public function getDataProvider()
     {
-        if ($fileName && file_exists($fileName)) {
+        if ($this->file && file_exists($this->file)) {
             return new CsvDataProvider([
                 'filename' => $this->file,
             ]);
         }
         
-        return false;
+        return new ArrayDataProvider(['allModels' => []]);
     }
 
 

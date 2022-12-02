@@ -44,5 +44,4 @@ class TestRecipients extends Model implements RecipientsInterface
         
         return array_keys($recipient);
     }
-
 }

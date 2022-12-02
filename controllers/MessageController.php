@@ -72,11 +72,15 @@ class MessageController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($archive = false)
     {
         Url::remember();
         $searchModel = new NewsletterMessageSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        
+        if (!$archive) {
+            $dataProvider->query->andWhere(['completed_at' => null]);
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -173,8 +177,7 @@ class MessageController extends Controller
     {
         $model = $this->findModel($id);
         
-        $htmlFile = $model->getHtmlFile();
-        $textFile = substr($htmlFile, 0, -4) . 'txt';
+        $textFile = $model->getTextFile();
         
         if($this->request->isPost) {
             $text = $this->request->post('NewsletterMessage')['text'];
@@ -186,6 +189,7 @@ class MessageController extends Controller
         }
         
         if ($loadFromHtml) {
+            $htmlFile = $model->getHtmlFile();
             $model->text = preg_replace('/\t+|\n\ +/', '', strip_tags(file_get_contents($htmlFile)));
         } else {
             $model->text = file_get_contents($textFile);
@@ -197,26 +201,35 @@ class MessageController extends Controller
     
     
     /**
-     *
+     * Configure recipients object
      */
     public function actionChooseRecipients($id)
     {
         $model = $this->findModel($id);
         
         if ($this->request->isPost) {
-            
-            if ($model->load($this->request->post()) && $model->save()) {
-                if(!empty($model->recipients_config)) {
-                    return $this->redirect(['view-recipients', 'id' => $model->id]);
-                } else {
-                    return $this->redirect(['choose-recipients', 'id' => $model->id]);
-                }
+            $newClass = $this->request->post('NewsletterMessage')['recipients_object'] ?? false;
+            if ($newClass && $newClass != $model->recipients_object) {
+                $model->recipients_object = $newClass;
+                $model->recipients_config = null;
             } else {
-                \Yii::$app->session->setFlash('error', 'Fehler beim Speichern.' . 
-                    implode("<br>", $model->errors)
-                );
+                $config = $this->request->post('NewsletterMessage')['recipients_config'] ?? false;
+                if ($config) {
+                    $model->recipients_config = serialize($config);
+                }
             }
+            
+            $model->save();
         }
+                
+        // instantiate recipients object
+        $recipients_object = $this->getRecipientObject($model);
+
+        // get dataprovider
+        $dataProvider = $recipients_object->getDataProvider();
+        $dataProvider->pagination->pagesize = 20;
+        
+        $columns = $recipients_object->getColumns() ?? [];
         
         // Scan dir for possible options
         $dir = $this->module->getBasePath().'/models/recipients/';
@@ -228,36 +241,42 @@ class MessageController extends Controller
             $options[substr($object, 0, -4)] = substr($object, 0, -14);
         }
         
-        return $this->render('choose-recipients', [
-            'model' => $model, 
-            'options' => $options]);
-    }
-    
-    
-    public function actionViewRecipients($id) 
-    {
-        $model = $this->findModel($id);
-        
-        $namespace = preg_replace('/controllers$/', 'models\\recipients\\', __NAMESPACE__);
-        $class = $namespace . $model->recipients_object;
-        $config = !empty($model->recipients_config) ? unserialize($model->recipients_config) : [];
-        
-        if(class_exists($class)) {
-            $recipients_object = new $class($config);
-        }
-        
-        $dataProvider = $recipients_object->getDataProvider();
-        $dataProvider->pagination->pagesize = 1;
-        
-        $columns = $recipients_object->getColumns() ?? [];
-        
         return $this->render('recipients', [
-            'model' => $model,
+            'options' => $options,
+            'model' => $model, 
+            'recipients_object' => $recipients_object,
             'dataProvider' => $dataProvider,
             'columns' => $columns,
         ]);
     }
     
+    
+    /**
+     * Check if newsletter is ready to send and queue it up
+     */
+    public function actionReadyToSend($id)
+    {
+        $model = $this->findModel($id);
+        $recipients_object = $this->getRecipientObject($model);
+        $dataProvider = $recipients_object->getDataProvider();
+        
+        $checks['recipients'] = $dataProvider->getTotalCount();
+        
+        $checks['html'] = !empty(file_get_contents($model->getHtmlFile()));
+        $checks['text'] = !empty(file_get_contents($model->getTextFile()));
+        
+        $checks['placeholders'] = empty(
+            array_diff($model->getPlaceholders(),
+            $recipients_object->getColumns()
+        ));
+        
+        $checks['attachments'] = false;
+        
+        return $this->render('ready-to-send', [
+            'checks' => $checks,
+            'model' => $model,
+        ]);
+    }
     
     /**
      * Deletes an existing NewsletterMessage model.
@@ -307,9 +326,10 @@ class MessageController extends Controller
             if (!mkdir($path, 0777, true)) {
                 throw new Exception('Verzeichnis konnte nicht erstellt werden.'); 
             }
-            if (!is_writable($path) && !chmod($path, 0777)) {
-                throw new Exception('Verzeichnis ist nicht beschreibbar.');
-            }
+        }
+        
+        if (!is_writable($path) && !chmod($path, 0777)) {
+            throw new Exception('Verzeichnis ist nicht beschreibbar.');
         }
                 
         $htmlFile = $path . 'message.html';
@@ -340,5 +360,22 @@ class MessageController extends Controller
             }
         }
         
-    }    
+    }
+    
+    
+    protected function getRecipientObject($model)
+    {
+        $namespace = preg_replace('/controllers$/', 'models\\recipients\\', __NAMESPACE__);
+        $class = $namespace . $model->recipients_object;
+        $config = !empty($model->recipients_config) ? unserialize($model->recipients_config) : [];
+        
+        if (!is_array($config)) {
+            $config = [];
+        }
+        
+        if(!class_exists($class)) {
+            throw new Exception('Klasse ' . $class . ' gibt es nicht');
+        }
+        return new $class($config);
+    }
 }
