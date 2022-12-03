@@ -11,7 +11,7 @@ use Yii;
  * @property string $slug
  * @property string $subject
  * @property string|null $template
- * @property blob $recipients_object
+ * @property blob $recipients_class
  * @property string|null $send_date
  * @property string|null $send_time
  * @property int|null $mails_sent
@@ -25,6 +25,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     
     public $html;
     public $text;
+    
+    protected $recipientsObject;
     
     /**
      * {@inheritdoc}
@@ -46,7 +48,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             [['send_date'] , 'date', 'format' => 'php:Y-m-d'],
             [['send_time'] , 'time', 'format' => 'php:H:i:s'],
             [['mails_sent', 'blacklisted'], 'integer'],
-            [['recipients_object'], 'string'],
+            [['recipients_class'], 'string'],
             [['subject', 'template'], 'string', 'max' => 255],
         ];
     }
@@ -61,7 +63,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             'slug' => 'Slug',
             'subject' => 'Subject',
             'template' => 'Template',
-            'recipients_object' => 'Recipients Object',
+            'recipients_class' => 'Recipients Object',
             'send_at' => 'Send At',
             'completed_at' => 'Completed At',
             'blacklisted' => 'Blacklisted',
@@ -69,6 +71,35 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     }
     
     
+    
+    /**
+     * Retrurns the recipients object
+     */
+    public function getRecipientsObject($params = null)
+    {
+        if (is_a($this->recipientsObject, 'schmauch\newsletter\models\RecipientsInterface')) {
+            return $this->recipientsObject;
+        }
+                
+        $namespace = 'schmauch\\newsletter\\models\\recipients\\';
+        $class = $namespace . $this->recipients_class;
+        
+        if($params && is_array($params)) {
+            $config = $params;
+        } else {
+            $config = !empty($this->recipients_config) ? unserialize($this->recipients_config) : [];
+            if (!is_array($config)) {
+                $config = [];
+            }
+        }
+        
+        if(!class_exists($class)) {
+            throw new \Exception('Klasse ' . $class . ' gibt es nicht');
+        }
+        
+        $this->recipientsObject = new $class($config);
+        return $this->recipientsObject;
+    }
     
     /**
      * Gets the html content
@@ -119,7 +150,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             \Yii::$app->session->addFlash('warning', 'Die verwendeten Platzhalter in der Html- und Text-Datei weichen voneinander ab.');
         }
 
-        $placeholders = array_unique(array_merge($htmlPlaceholders[1], $textPlaceholders[1]));
+        $placeholders = array_unique(array_merge([0 => 'email'], $htmlPlaceholders[1], $textPlaceholders[1]));
         
         return $placeholders;
     }

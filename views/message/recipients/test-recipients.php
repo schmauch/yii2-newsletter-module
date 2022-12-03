@@ -22,7 +22,7 @@ $this->registerCss('#recipients .row:nth-of-type(odd) { background-color: rgba(0
 
 echo '<div id="recipients">';
 
-foreach($recipients_object->recipients as $index => $recipient) {
+foreach($model->recipientsObject->recipients as $index => $recipient) {
     echo '<div class="row py-2">';
     foreach($placeholders as $placeholder) {
         printf($template, $index, $placeholder, $recipient[$placeholder] ?? '');

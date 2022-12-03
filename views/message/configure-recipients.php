@@ -13,15 +13,15 @@ use yii\widgets\ActiveForm;
 
 <?php
 
-$form = ActiveForm::begin();
+$form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]);
 
-$class = $model->recipients_object;
+$class = $model->recipients_class;
 $view = strtolower(ltrim(preg_replace('/([A-Z])/', '-$1', $class), '-'));
 
 echo $this->render('recipients/'.$view, [
     'form' => $form, 
     'model' => $model,
-    'recipients_object' => $recipients_object
+    //'recipients_object' => $recipients_object
 ]);
 
 ?>

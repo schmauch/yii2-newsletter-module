@@ -8,6 +8,7 @@
     "minimum-stability": "dev",
     "require": {
         "yiisoft/yii2-queue": "*",
-        "bizley/contenttools": "*"
+        "bizley/contenttools": "*",
+        "gri3li/yii2-csvdataprovider": "*"
     }
 }

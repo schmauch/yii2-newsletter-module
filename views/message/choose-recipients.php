@@ -17,7 +17,7 @@ use yii\widgets\ActiveForm;
 
 <?php $form = ActiveForm::begin(); ?>
 
-<?= $form->field($model, 'recipients_object')->dropDownList($options)->label(false) ?>
+<?= $form->field($model, 'recipients_class')->dropDownList($options)->label(false) ?>
 
 <div class="form-group my-3">
     <?= Html::submitButton('Save', ['class' => 'btn btn-success mr-3']) ?>

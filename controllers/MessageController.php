@@ -208,29 +208,23 @@ class MessageController extends Controller
         $model = $this->findModel($id);
         
         if ($this->request->isPost) {
-            $newClass = $this->request->post('NewsletterMessage')['recipients_object'] ?? false;
-            if ($newClass && $newClass != $model->recipients_object) {
-                $model->recipients_object = $newClass;
+
+            $newClass = $this->request->post('NewsletterMessage')['recipients_class'] ?? false;
+
+            if ($newClass && $newClass != $model->recipients_class) {
+                $model->recipients_class = $newClass;
                 $model->recipients_config = null;
             } else {
-                $config = $this->request->post('NewsletterMessage')['recipients_config'] ?? false;
-                if ($config) {
-                    $model->recipients_config = serialize($config);
+                $configData = $this->request->post('NewsletterMessage')['recipients_config'] ?? false;
+                if ($configData) {
+                    $recipientsObject = $model->getRecipientsObject($configData);
+                    $model->recipients_config = serialize($recipientsObject->attributes);
                 }
             }
             
             $model->save();
         }
                 
-        // instantiate recipients object
-        $recipients_object = $this->getRecipientObject($model);
-
-        // get dataprovider
-        $dataProvider = $recipients_object->getDataProvider();
-        $dataProvider->pagination->pagesize = 20;
-        
-        $columns = $recipients_object->getColumns() ?? [];
-        
         // Scan dir for possible options
         $dir = $this->module->getBasePath().'/models/recipients/';
         $objects = scandir($dir);
@@ -244,9 +238,6 @@ class MessageController extends Controller
         return $this->render('recipients', [
             'options' => $options,
             'model' => $model, 
-            'recipients_object' => $recipients_object,
-            'dataProvider' => $dataProvider,
-            'columns' => $columns,
         ]);
     }
     
@@ -257,26 +248,38 @@ class MessageController extends Controller
     public function actionReadyToSend($id)
     {
         $model = $this->findModel($id);
-        $recipients_object = $this->getRecipientObject($model);
-        $dataProvider = $recipients_object->getDataProvider();
         
-        $checks['recipients'] = $dataProvider->getTotalCount();
-        
-        $checks['html'] = !empty(file_get_contents($model->getHtmlFile()));
-        $checks['text'] = !empty(file_get_contents($model->getTextFile()));
-        
-        $checks['placeholders'] = empty(
-            array_diff($model->getPlaceholders(),
-            $recipients_object->getColumns()
-        ));
-        
-        $checks['attachments'] = false;
-        
+        $checks = $this->isReadyToSend($model);
+              
         return $this->render('ready-to-send', [
             'checks' => $checks,
             'model' => $model,
         ]);
     }
+    
+    
+    
+    /**
+     * Adds all newsletter messages to queue
+     */
+     public function actionQueue($id)
+     {
+        $model = $this->findModel($id);
+        $checks = $this->isReadyToSend($model);
+        
+        // show errors if newsletter isn't ready to send
+        if (!array_product($checks)) {
+            return $this->render('ready-to-send', [
+                'model' => $model,
+                'checks' => $checks,
+            ]);
+        }
+        
+        
+     }
+    
+    
+    
     
     /**
      * Deletes an existing NewsletterMessage model.
@@ -362,20 +365,26 @@ class MessageController extends Controller
         
     }
     
-    
-    protected function getRecipientObject($model)
+    /*
+    protected function getRecipientObject($model, $params = false)
     {
-        $namespace = preg_replace('/controllers$/', 'models\\recipients\\', __NAMESPACE__);
-        $class = $namespace . $model->recipients_object;
-        $config = !empty($model->recipients_config) ? unserialize($model->recipients_config) : [];
+    }
+    */
+    
+    protected function isReadyToSend($model)
+    {
+        $checks['recipients'] = $model->recipientsObject->dataProvider->getTotalCount() > 0;
         
-        if (!is_array($config)) {
-            $config = [];
-        }
+        $checks['html'] = !empty(file_get_contents($model->getHtmlFile()));
+        $checks['text'] = !empty(file_get_contents($model->getTextFile()));
         
-        if(!class_exists($class)) {
-            throw new Exception('Klasse ' . $class . ' gibt es nicht');
-        }
-        return new $class($config);
+        $checks['placeholders'] = empty(
+            array_diff($model->getPlaceholders(),
+            $model->recipientsObject->getColumns()
+        ));
+        
+        $checks['attachments'] = false;
+        
+        return $checks;
     }
 }
