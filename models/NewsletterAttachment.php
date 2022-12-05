@@ -35,8 +35,8 @@ class NewsletterAttachment extends \yii\db\ActiveRecord
             [['message_id', 'mode'], 'integer'],
             [['file'], 'file', 
                 'skipOnEmpty' => false, 
-                'extensions' => $this->module->params['allowed_attachment_extensions']
-                'maxSize' => ini_get('upload_max_filesize'),
+                'extensions' => \schmauch\newsletter\Module::getInstance()->params['allowed_attachment_extensions'],
+                'maxSize' => 2097152, //ini_get('upload_max_filesize'),
             ],
             [['message_id'], 'exist', 'skipOnError' => true, 'targetClass' => NewsletterMessage::class, 'targetAttribute' => ['message_id' => 'id']],
         ];

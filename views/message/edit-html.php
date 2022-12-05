@@ -21,13 +21,22 @@ echo $this->render('_nav', ['id' => $model->id]);
 
 echo Html::button('Html bearbeiten', ['class' => 'btn btn-primary mb-2', 'onclick' => 'ContentTools.EditorApp.get().start();']);
 
-echo '<div class="border">';
-ContentTools::begin(['saveEngine' => ['save' => Url::current()]]);
+echo '<div class="row">';
+ContentTools::begin(['saveEngine' => ['save' => Url::current()], 'options' => ['class' => 'col-10 border']]);
 
 echo $model->html;
 
 ContentTools::end();
-echo '</div>';
+
+echo '<div class="col-2"><h5>Verfügbare Platzhalter:</h5><ul>';
+
+foreach($placeholders as $placeholder) {
+    echo '<li>[[' . $placeholder . ']]</li>';
+}
+
+echo '</ul></div></div>';
+
+
 
 echo '<div class="form-group">' .
     Html::button('speichern', ['class' => 'btn btn-success', 'onclick' => 'ContentTools.EditorApp.get().stop(true);']) .

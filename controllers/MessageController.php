@@ -4,6 +4,7 @@ namespace schmauch\newsletter\controllers;
 
 use schmauch\newsletter\models\NewsletterMessage;
 use schmauch\newsletter\models\NewsletterMessageSearch;
+use schmauch\newsletter\models\NewsletterAttachment;
 use schmauch\newsletter\models\RecipientsInterface;
 use schmauch\newsletter\jobs\SendMailJob;
 
@@ -165,7 +166,10 @@ class MessageController extends Controller
         }
         
         $model->html = file_get_contents($htmlFile);
-        return $this->render('edit-html', ['model' => $model]);
+        return $this->render('edit-html', [
+            'model' => $model,
+            'placeholders' => $model->getPlaceholders(),
+        ]);
     }
     
     
@@ -195,7 +199,31 @@ class MessageController extends Controller
             $model->text = file_get_contents($textFile);
         }
         
-        return $this->render('edit-text', ['model' => $model]);
+        return $this->render('edit-text', [
+            'model' => $model,
+            'placeholders' => $model->getPlaceholders(),
+        ]);
+    }
+    
+    
+    
+    /**
+     *
+     */
+    public function actionAttachments($id)
+    {
+        $model = $this->findModel($id);
+        
+        $newAttachment = new NewsletterAttachment();
+        
+        if ($this->request->isPost) {
+            
+        }
+        
+        return $this->render('attachments', [
+            'model' => $model,
+            'newAttachment' =>$newAttachment,
+        ]);
     }
     
     
@@ -208,6 +236,8 @@ class MessageController extends Controller
         $model = $this->findModel($id);
         
         if ($this->request->isPost) {
+        //print_r($_POST);
+        //die();
 
             $newClass = $this->request->post('NewsletterMessage')['recipients_class'] ?? false;
 
@@ -384,7 +414,7 @@ class MessageController extends Controller
             $columnNames = $columns;
         } else {
             foreach($columns as $index => $column) {
-                $columnNames[] = $column['header'] ?? '';
+                $columnNames[$index] = $column['header'] ?? '';
             }
         }
         
