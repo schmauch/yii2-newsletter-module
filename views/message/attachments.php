@@ -17,7 +17,7 @@ foreach($model->newsletterAttachments as $attachment) {
 
 $form = ActiveForm::begin();
 
-echo $form->field($newAttachment, 'file')->input('file');
+echo $form->field($newAttachment, 'file')->fileInput();
 
 echo Html::button('hochladen', ['type' => 'submit', 'class' => 'btn btn-success']);
 

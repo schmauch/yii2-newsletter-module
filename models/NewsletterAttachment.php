@@ -31,7 +31,7 @@ class NewsletterAttachment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['message_id', 'file_name'], 'required'],
+            [['message_id', 'file'], 'required'],
             [['message_id', 'mode'], 'integer'],
             [['file'], 'file', 
                 'skipOnEmpty' => false, 
@@ -70,8 +70,10 @@ class NewsletterAttachment extends \yii\db\ActiveRecord
      */
     public function upload()
     {
+        $path = \schmauch\newsletter\Module::getInstance()->params['files_path'] . '/' . $this->message->slug . '/';
+        
         if ($this->validate()) {
-            $this->file->saveAs('uploads/' . $this->file->baseName . '.' . $this->file->extension);
+            $this->file->saveAs($path . $this->file->baseName . '.' . $this->file->extension);
             return true;
         } else {
             return false;

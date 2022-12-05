@@ -217,7 +217,15 @@ class MessageController extends Controller
         $newAttachment = new NewsletterAttachment();
         
         if ($this->request->isPost) {
+            if ($newAttachment->load($this->request->post())) {
+                $newAttachment->link('message', $model);
+                $newAttachment->file = UploadedFile::getInstance($newAttachment, 'file');
+                if (!$newAttachment->upload()) {
+                    \Yii::$app->session->addFlash('error', 'Datei konnte nicht hochgeladen werden');
+                }
+            }
             
+            return $this->redirect(['attachments', 'id' => $id]);
         }
         
         return $this->render('attachments', [
