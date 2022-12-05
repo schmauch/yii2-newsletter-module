@@ -378,9 +378,19 @@ class MessageController extends Controller
         $checks['html'] = !empty(file_get_contents($model->getHtmlFile()));
         $checks['text'] = !empty(file_get_contents($model->getTextFile()));
         
+        $columnNames = [];
+        $columns = $model->recipientsObject->getColumns();
+        if (count($columns) === count($columns, true)) {
+            $columnNames = $columns;
+        } else {
+            foreach($columns as $index => $column) {
+                $columnNames[] = $column['header'] ?? '';
+            }
+        }
+        
         $checks['placeholders'] = empty(
             array_diff($model->getPlaceholders(),
-            $model->recipientsObject->getColumns()
+            $columnNames
         ));
         
         $checks['attachments'] = false;
