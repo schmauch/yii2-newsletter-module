@@ -73,7 +73,7 @@ class NewsletterAttachment extends \yii\db\ActiveRecord
         $path = \schmauch\newsletter\Module::getInstance()->params['files_path'] . '/' . $this->message->slug . '/';
         
         if ($this->validate()) {
-            $this->file->saveAs($path . $this->file->baseName . '.' . $this->file->extension);
+            $this->file->saveAs($path . $this->file->baseName . '.' . $this->file->extension, false);
             return true;
         } else {
             return false;

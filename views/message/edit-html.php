@@ -22,7 +22,14 @@ echo $this->render('_nav', ['id' => $model->id]);
 echo Html::button('Html bearbeiten', ['class' => 'btn btn-primary mb-2', 'onclick' => 'ContentTools.EditorApp.get().start();']);
 
 echo '<div class="row">';
-ContentTools::begin(['saveEngine' => ['save' => Url::current()], 'options' => ['class' => 'col-10 border']]);
+ContentTools::begin([
+    'saveEngine' => ['save' => Url::current()],
+    'imagesEngine' => [
+        'upload' => '/newsletter/message/content-tools-image-upload',
+        'rotate' => '/newsletter/message/content-tools-image-rotate',
+        'insert' => '/newsletter/message/content-tools-image-insert',
+    ],
+    'options' => ['class' => 'col-10 border']]);
 
 echo $model->html;
 

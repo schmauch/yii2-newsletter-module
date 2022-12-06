@@ -12,6 +12,7 @@ use gri3li\yii2csvdataprovider\CsvDataProvider;
 
 use yii\filters\VerbFilter;
 use yii\helpers\Url;
+use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
@@ -45,12 +46,36 @@ class MessageController extends Controller
     public function actions()
     {
         return [
-            'content-tools-image-upload' => \bizley\contenttools\actions\UploadAction::className(),
-            'content-tools-image-insert' => \bizley\contenttools\actions\InsertAction::className(),
+            //'content-tools-image-upload' => \bizley\contenttools\actions\UploadAction::className(),
+            //'content-tools-image-insert' => \bizley\contenttools\actions\InsertAction::className(),
             'content-tools-image-rotate' => \bizley\contenttools\actions\RotateAction::className(),
         ];
     }
+    
+    public function actionContentToolsImageUpload()
+    {
+        $file = '/var/www/html/duck.jpg';
+        $imageSizeInfo = @getimagesize($file);
+        //$url = 'data:image/png;base64, ' . base64_encode(file_get_contents($file));
+        $url = '@web/newsletter/images/duck.jpg';
+        return Json::encode([
+            'size' => $imageSizeInfo,
+            'url'  => $url
+        ]);
+    }
 
+    public function actionContentToolsImageInsert()
+    {
+        $file = '/var/www/html/duck.jpg';
+        $imageSizeInfo = @getimagesize($file);
+        //$url = 'data:image/png;base64, ' . base64_encode(file_get_contents($file));
+        $url = '@web/newsletter/images/duck.jpg';
+        return Json::encode([
+            'size' => $imageSizeInfo,
+            'url'  => $url,
+            'alt' => 'alt',
+        ]);
+    }
     
     public function actionBar()
     {
@@ -158,6 +183,7 @@ class MessageController extends Controller
         
         if($this->request->isPost) {
             $html = $this->request->post('contentTools0');
+            $html = preg_replace('/\?_ignore=[0-9]{13}/', '', $html);
             if (false === file_put_contents($htmlFile, $html)) {
                 throw new Exception('Fehler beim Schreiben des HTML-Inhalts.');
                 return $this->asJson(['errors' => ['write' => 'Fehler beim Schreiben des HTML-Inhalts']]);
@@ -166,6 +192,7 @@ class MessageController extends Controller
         }
         
         $model->html = file_get_contents($htmlFile);
+        $model->html = preg_replace('/\?_ignore=[0-9]{13}/', '', $model->html);
         return $this->render('edit-html', [
             'model' => $model,
             'placeholders' => $model->getPlaceholders(),

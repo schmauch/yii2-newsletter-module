@@ -1,4 +1,5 @@
-hello [[vorname]]
+hello [[name]]
 
 
 Wir duzen zns
+
