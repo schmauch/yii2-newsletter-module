@@ -19,8 +19,8 @@ class ActiveRecordRecipients extends Model implements RecipientsInterface
     public function getDataProvider()
     {
         if (!$this->activeRecord || !class_exists($this->activeRecord)) {
-            //return new ArrayDataProvider(['allModels' => []]);
-            throw new \Exception('ActiveRecord ' . $this->activeRecord . ' existiert nicht');
+            return new ArrayDataProvider(['allModels' => []]);
+            //throw new \Exception('ActiveRecord ' . $this->activeRecord . ' existiert nicht');
         }
         
         $this->model = new $this->activeRecord();
@@ -32,7 +32,13 @@ class ActiveRecordRecipients extends Model implements RecipientsInterface
     
     public function getColumns()
     {
-        return array_keys($this->model->attributes);
+        if(!$this->activeRecord || !class_exists($this->activeRecord)) {
+            return [];
+        }
+        
+        $this->model = new $this->activeRecord();
+        //return array_keys($this->model->attributes);
+        print_r(array_keys($this->model->attributes));
     }
     
 }
