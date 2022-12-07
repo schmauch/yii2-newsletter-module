@@ -248,9 +248,12 @@ class MessageController extends Controller
         $model->html = file_get_contents($htmlFile);
         $model->html = preg_replace('/\?_ignore=[0-9]{13}/', '', $model->html);
         $model->html = preg_replace('|<\?= \$message->embed\(\'(.+?)\'\); \?>"|', '/newsletter/message/image/\?slug=' . $model->slug . '&amp;img=$1"', $model->html);
+        
+        
+        
         return $this->render('edit-html', [
             'model' => $model,
-            'placeholders' => $model->getPlaceholders(),
+            'placeholders' => $model->recipientsObject->getColumns()
         ]);
     }
     
@@ -283,7 +286,7 @@ class MessageController extends Controller
         
         return $this->render('edit-text', [
             'model' => $model,
-            'placeholders' => $model->getPlaceholders(),
+            'placeholders' => $model->recipientsObject->getColumns(),
         ]);
     }
     
@@ -401,13 +404,14 @@ class MessageController extends Controller
         $dataProvider->getPagination()->setPageSize($this->module->params['messages_limit']);
         
         // prepare mailer
-        $mailer = \Yii::$app->mailer;
+        //$mailer = \Yii::$app->mailer;
         
-        $mailer->viewPath = $model->getMessageDir();
-        $mailer->htmlLayout = '@schmauch/newsletter/' . 
-            $this->module->params['template_path'] . $model->template . '/html';
+        //$mailer->viewPath = $model->getMessageDir();
+        //$mailer->htmlLayout = '@schmauch/newsletter/' . 
+        //    $this->module->params['template_path'] . $model->template . '/html';
             
         // Add attachments
+        /*
         $embed = [];
         $attach = [];
         foreach($model->newsletterAttachments as $attachment) {
@@ -423,8 +427,8 @@ class MessageController extends Controller
                 $attach['$attachment->file'] = $file;
             }
         }
-        
-        $message = $mailer->compose([
+        */
+        /*$message = $mailer->compose([
                     'html' => 'message.html',
                     'txt' => 'message.txt',
                     'embed-email' => $embed,
@@ -434,7 +438,7 @@ class MessageController extends Controller
         $message->setFrom('r.schmutz@girardi.ch');
         $message->setSubject($model->subject);
         
-        
+        */
         $pages = ceil($dataProvider->getTotalCount() / 
             $dataProvider->getPagination()->getPageSize());
             
@@ -444,17 +448,11 @@ class MessageController extends Controller
             $dataProvider->refresh();
             
             foreach($dataProvider->getModels() as $recipient) {
-                    
                 
-                if(is_object($recipient)) {
-                    $message->setTo($recipient->email);
-                } else {
-                    $message->setTo($recipient['email']);
-                }
-                
-                $message->send();
-                echo "Nachricht verschickt";
-                
+                $job = new SendMailJob([
+                    'message_id' => $id,
+                    'recipient' => $recipient,
+                ]);
             }
         }
      }

@@ -37,7 +37,11 @@ ContentTools::end();
 
 echo '<div class="col-2"><h5>Verfügbare Platzhalter:</h5><ul>';
 
-foreach($placeholders as $placeholder) {
+//print_r($placeholders);
+//$foo = [ 0=> 'foo', 1 => 'bar'];
+//print_r($foo);
+//die();
+foreach($placeholders as $index => $placeholder) {
     echo '<li>[[' . $placeholder . ']]</li>';
 }
 

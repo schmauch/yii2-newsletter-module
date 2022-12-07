@@ -6,6 +6,7 @@ use yii\base\BaseObject;
 use yii\helpers\Console;
 
 use schmauch\newsletter\Module as NewsletterModule;
+use schmauch\newsletter\models\NewsletterMessage as NewsletterMessage;
 
 /*
  * Queue job to send out mails
@@ -17,17 +18,16 @@ use schmauch\newsletter\Module as NewsletterModule;
  */
 class SendMailJob extends BaseObject implements \yii\queue\JobInterface
 {
-    public $message;
-    public $params = [];
+    public $message_id;
     public $recipient;
-    public $subject;
     
     /**
      * @inheritdoc
      */
     public function execute($queue)
     {
-        $module = \schmauch\newsletter\Module::getInstance();
+        $module = NewsletterModule::getInstance();
+        $newsletter = NewsletterMessage::findOne($this->message_id)
                 
         if (isset($module->params['senderEmail'])) {
             $from =  $module->params['senderEmail'];
@@ -40,22 +40,59 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
             die('Kein Mailer!');
         }
         
-        $message = $mailer->compose($this->message, $this->params);
+        $mailer->viewPath = $newsletter->getMessageDir();
+
+        $mailer->htmlLayout = '@schmauch/newsletter/' . 
+            $this->module->params['template_path'] . $newsletter->template . '/html';
+
+        $embed = [];
+        $attachments = [];
+        foreach($newsletter->newsletterAttachments as $attachment) {
+            $file = $newsletter->getMessageDir() . 'attachments/' . $attachment->file;
+            if ($attachment->mode) {
+                $embed[$attachment->file] = $file;
+            } else {
+                $attachments[$attachment->file] = $file;
+            }
+        }
+        
+        $message = $mailer->compose([
+                    'html' => 'message.html',
+                    'txt' => 'message.txt'],
+                    [
+                        $embed, 
+                        $params,
+                    ],
+        ]);
+        
         if (!is_a($message, '\yii\mail\MessageInterface')) {
             die('Keine Message!');
         }
         
-        $message->setTo($this->recipient);
-        $message->setSubject($this->subject);
+        foreach($attachments as $attachment) {
+            $message->attach($attachment);
+        }
+        
+        
+        if(is_object($this->recipient)) {
+            $message->setTo($this->recipient->email);
+            foreach($newsletter->getColumns() as $column) {
+                $params[$column] => $this->recipient->$column;
+            }
+        } else {
+            $message->setTo($this->recipient->email);
+            foreach($newsletter->getColumns() as $column) {
+                $params[$column] => $this->recipient->$column;
+            }
+        }
+        
+        $message->setSubject($newsletter->subject);
         $message->setFrom($from);
         
-        //$mailer->send($message);
-
-        sleep(60);
-        echo 'irgendwas!';
-        flush();
-        Console::stdout(
-            'verarbeite ' . 
-            Console::ansiFormat($this->recipient, [Console::FG_GREEN]) . "\n");
+        if($mailer->send($message)) {
+            Console::stdout(
+                'verarbeite ' . 
+                Console::ansiFormat($this->recipient, [Console::FG_GREEN]) . "\n");
+        }
     }
 }
