@@ -47,36 +47,86 @@ class MessageController extends Controller
     {
         return [
             //'content-tools-image-upload' => \bizley\contenttools\actions\UploadAction::className(),
-            //'content-tools-image-insert' => \bizley\contenttools\actions\InsertAction::className(),
+            'content-tools-image-insert' => \schmauch\newsletter\actions\ImageInsertAction::className(),
             'content-tools-image-rotate' => \bizley\contenttools\actions\RotateAction::className(),
         ];
     }
     
-    public function actionContentToolsImageUpload()
+    public function actionContentToolsImageUpload($id)
     {
-        $file = '/var/www/html/duck.jpg';
-        $imageSizeInfo = @getimagesize($file);
-        //$url = 'data:image/png;base64, ' . base64_encode(file_get_contents($file));
-        $url = '@web/newsletter/images/duck.jpg';
+        $model = $this->findModel($id);
+        $attachment = new NewsletterAttachment();
+        $attachment->file = UploadedFile::getInstanceByName('image');
+
+        //return Json::encode(['size' => [], 'url' => var_export($attachment, true)]);
+        $path = $model->getMessageDir() . '/attachments/';
+
+        $infix = '';
+        $i = 0;
+        
+        do {
+            $fileName = $path . $attachment->file->baseName . $infix . '.' . $attachment->file->extension;
+            $i++;
+            $infix = '_' . $i;
+        } while(file_exists($fileName));
+        
+        $attachment->link('message', $model);
+        
+        if (!$attachment->validate() || !$attachment->file->saveAs($fileName, false)) {
+            return Json::encode(['error', 'Fehler beim Speichern der Datei' . var_export($attachment->errors)]);
+        }
+                
+        $attachment->file->name = str_replace($path, '', $fileName);
+        $attachment->save();
+        
+        $imageSizeInfo = @getimagesize($fileName);
+        
+        $url = \Yii::getAlias('@web/newsletter/message/image/') . '?slug=' . $model->slug . '&img=' . $attachment->file->name;
         return Json::encode([
             'size' => $imageSizeInfo,
-            'url'  => $url
+            'url'  => $url,
         ]);
     }
-
-    public function actionContentToolsImageInsert()
+    
+    
+        
+    /**
+     * //... evtl. auslagern in Action oder Behavior
+     */
+    /*public function actionContentToolsImageInsert()
     {
         $file = '/var/www/html/duck.jpg';
         $imageSizeInfo = @getimagesize($file);
         //$url = 'data:image/png;base64, ' . base64_encode(file_get_contents($file));
-        $url = '@web/newsletter/images/duck.jpg';
+        $url = \Yii::getAlias('@web/newsletter/message/image/') . '?img=duck.jpg';
         return Json::encode([
             'size' => $imageSizeInfo,
             'url'  => $url,
             'alt' => 'alt',
         ]);
+    }*/
+    
+
+
+    public function actionImage($slug, $img)
+    {
+        $img = preg_replace('|\?_ignore=[0-9]+|', '', $img);
+        $file = \schmauch\newsletter\Module::getInstance()->params['files_path'] . $slug . '/attachments/' . $img;
+        $type = mime_content_type($file);
+                
+        $response = \Yii::$app->response;
+        $response->format = \yii\web\Response::FORMAT_RAW;
+        
+        
+        $response->headers->add('content-type', $type);
+        
+        $response->data = file_get_contents($file);
+        
+        return $response;        
     }
     
+
+
     public function actionBar()
     {
         $command = realpath(\Yii::getAlias('@app/../yii'));
@@ -184,6 +234,10 @@ class MessageController extends Controller
         if($this->request->isPost) {
             $html = $this->request->post('contentTools0');
             $html = preg_replace('/\?_ignore=[0-9]{13}/', '', $html);
+            
+            $search = '|/newsletter/message/image/\?slug=' . $model->slug . '&amp;img=(.+?)"|';
+            $replace = '<?= $message->embed(\'' . $model->getMessageDir() . '/attachments/$1\'); ?>";';
+            $html = preg_replace($search, $replace, $html);
             if (false === file_put_contents($htmlFile, $html)) {
                 throw new Exception('Fehler beim Schreiben des HTML-Inhalts.');
                 return $this->asJson(['errors' => ['write' => 'Fehler beim Schreiben des HTML-Inhalts']]);
@@ -193,6 +247,7 @@ class MessageController extends Controller
         
         $model->html = file_get_contents($htmlFile);
         $model->html = preg_replace('/\?_ignore=[0-9]{13}/', '', $model->html);
+        $model->html = preg_replace('|<\?= \$message->embed\(\'(.+?)\'\); \?>"|', '/newsletter/message/image/\?slug=' . $model->slug . '&amp;img=$1"', $model->html);
         return $this->render('edit-html', [
             'model' => $model,
             'placeholders' => $model->getPlaceholders(),
@@ -250,6 +305,8 @@ class MessageController extends Controller
                 if (!$newAttachment->upload()) {
                     \Yii::$app->session->addFlash('error', 'Datei konnte nicht hochgeladen werden');
                 }
+                //$newAttachment->file = $newAttachment->file->basename . $newAttachment->file->extension;
+                $newAttachment->save();
             }
             
             return $this->redirect(['attachments', 'id' => $id]);
@@ -340,7 +397,66 @@ class MessageController extends Controller
             ]);
         }
         
+        $dataProvider = $model->recipientsObject->getDataProvider();
+        $dataProvider->getPagination()->setPageSize($this->module->params['messages_limit']);
         
+        // prepare mailer
+        $mailer = \Yii::$app->mailer;
+        
+        $mailer->viewPath = $model->getMessageDir();
+        $mailer->htmlLayout = '@schmauch/newsletter/' . 
+            $this->module->params['template_path'] . $model->template . '/html';
+            
+        // Add attachments
+        $embed = [];
+        $attach = [];
+        foreach($model->newsletterAttachments as $attachment) {
+            $file = $model->getMessageDir() . 'attachments/' . $attachment->file;
+            echo $file;
+            if (!is_readable($file)) {
+                echo 'nicht lesbar!';
+                die();
+            }
+            if ($attachment->mode) {
+                $embed[$attachment->file] = $file;
+            } else {
+                $attach['$attachment->file'] = $file;
+            }
+        }
+        
+        $message = $mailer->compose([
+                    'html' => 'message.html',
+                    'txt' => 'message.txt',
+                    'embed-email' => $embed,
+                    'attach' => $attach,
+                ]);
+        
+        $message->setFrom('r.schmutz@girardi.ch');
+        $message->setSubject($model->subject);
+        
+        
+        $pages = ceil($dataProvider->getTotalCount() / 
+            $dataProvider->getPagination()->getPageSize());
+            
+        for($i=0;$i<$pages;$i++) {
+            
+            $dataProvider->getPagination()->setPage($i);
+            $dataProvider->refresh();
+            
+            foreach($dataProvider->getModels() as $recipient) {
+                    
+                
+                if(is_object($recipient)) {
+                    $message->setTo($recipient->email);
+                } else {
+                    $message->setTo($recipient['email']);
+                }
+                
+                $message->send();
+                echo "Nachricht verschickt";
+                
+            }
+        }
      }
     
     
@@ -385,7 +501,9 @@ class MessageController extends Controller
         $path = $this->module->params['files_path'];
         
         if (!is_dir($path)) {
-            throw new \yii\base\InvalidConfigException('Parameter `files_path` leads to an  non existing directory.');
+            throw new \yii\base\InvalidConfigException(
+                'Parameter `files_path` leads to an  non existing directory.'
+            );
         }
         
         $path .= $slug . '/';
@@ -430,12 +548,11 @@ class MessageController extends Controller
         
     }
     
-    /*
-    protected function getRecipientObject($model, $params = false)
-    {
-    }
-    */
     
+    
+    /**
+     * //...
+     */
     protected function isReadyToSend($model)
     {
         $checks['recipients'] = $model->recipientsObject->dataProvider->getTotalCount() > 0;
@@ -445,6 +562,7 @@ class MessageController extends Controller
         
         $columnNames = [];
         $columns = $model->recipientsObject->getColumns();
+        
         if (count($columns) === count($columns, true)) {
             $columnNames = $columns;
         } else {
@@ -458,7 +576,13 @@ class MessageController extends Controller
             $columnNames
         ));
         
-        $checks['attachments'] = false;
+        $checks['attachments'] = true;
+        
+        foreach($model->newsletterAttachments as $attachment)
+        {
+            $checks['attachments'] *= is_readable($model->getMessageDir() . 'attachments/' . $attachment->file);
+        }
+         
         
         return $checks;
     }

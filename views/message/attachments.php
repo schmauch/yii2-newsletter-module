@@ -10,15 +10,21 @@ $this->title = 'Bearbeite Newsletter: ' . $model->subject;
 echo '<h1>' . $this->title . '</h1>';
 
 echo $this->render('_nav', ['id' => $model->id]);
+
+echo '<h3>Verfügbare Attachments</h3><ul>';
  
 foreach($model->newsletterAttachments as $attachment) {
-    print_r($attachment);
+    echo '<li>' . $attachment->file . '</li>';
 }
+
+echo '</ul>';
+
+echo '<h3 class="pt-3 border-top">Weiteres Attachment hochladen</h3>';
 
 $form = ActiveForm::begin();
 
-echo $form->field($newAttachment, 'file')->fileInput();
+echo $form->field($newAttachment, 'file')->fileInput(['class' => 'form-control'])->label('Datei auswählen', ['class' => 'form-label']);
 
-echo Html::button('hochladen', ['type' => 'submit', 'class' => 'btn btn-success']);
+echo Html::button('hochladen', ['type' => 'submit', 'class' => 'btn btn-success mt-3']);
 
 $form->end();

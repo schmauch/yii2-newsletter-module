@@ -11,25 +11,28 @@ use yii\data\ArrayDataProvider;
 class ActiveRecordRecipients extends Model implements RecipientsInterface
 {
     public $activeRecord = false;
-    public $queryOptions = false;    
+    public $queryOptions = false;
     
+    private $model;
+    private $query;
+       
     public function getDataProvider()
     {
         if (!$this->activeRecord || !class_exists($this->activeRecord)) {
-            return new ArrayDataProvider(['allModels' => []]);
+            //return new ArrayDataProvider(['allModels' => []]);
             throw new \Exception('ActiveRecord ' . $this->activeRecord . ' existiert nicht');
         }
         
-        $model = new $this->activeRecord();
-        $query = $model->find();
+        $this->model = new $this->activeRecord();
+        $this->query = $this->model->find();
                 
-        return new ActiveDataProvider(['query' => $query]);
+        return new ActiveDataProvider(['query' => $this->query]);
         
     }
     
     public function getColumns()
     {
-        return [];
+        return array_keys($this->model->attributes);
     }
     
 }

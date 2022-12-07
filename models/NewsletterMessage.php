@@ -35,6 +35,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     {
         return 'newsletter_messages';
     }
+    
+    
 
     /**
      * {@inheritdoc}
@@ -52,6 +54,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             [['subject', 'template'], 'string', 'max' => 255],
         ];
     }
+    
+    
 
     /**
      * {@inheritdoc}
@@ -101,21 +105,27 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         return $this->recipientsObject;
     }
     
+    
+    
     /**
      * Gets the html content
      */
     public function getHtmlFile()
     {
-        return \schmauch\newsletter\Module::getInstance()->params['files_path'] . $this->slug .'/message.html';
+        return $this->getMessageDir() .'/message.html';
     }
+    
+    
 
     /**
      * Gets the plain text content
      */
     public function getTextFile()
     {
-        return \schmauch\newsletter\Module::getInstance()->params['files_path'] . $this->slug .'/message.txt';
+        return $this->getMessageDir() .'/message.txt';
     }
+    
+    
 
     /**
      * Gets query for [[NewsletterAttachments]].
@@ -129,7 +139,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     
     
     /**
-     *
+     * //...
      */
     public function getPlaceholders()
     {
@@ -153,5 +163,14 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         $placeholders = array_unique(array_merge([0 => 'email'], $htmlPlaceholders[1], $textPlaceholders[1]));
         
         return $placeholders;
+    }
+    
+    
+    /**
+     * //...
+     */
+    public function getMessageDir()
+    {
+        return \schmauch\newsletter\Module::getInstance()->params['files_path'] . $this->slug . '/';
     }
 }

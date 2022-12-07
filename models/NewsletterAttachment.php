@@ -9,7 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int $message_id
- * @property string $file_name
+ * @property string $file
  * @property int|null $mode
  *
  * @property NewsletterMessage $message
@@ -50,7 +50,7 @@ class NewsletterAttachment extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'message_id' => 'Message ID',
-            'file_name' => 'File Name',
+            'file' => 'File Name',
             'mode' => 'Mode',
         ];
     }
@@ -70,13 +70,25 @@ class NewsletterAttachment extends \yii\db\ActiveRecord
      */
     public function upload()
     {
-        $path = \schmauch\newsletter\Module::getInstance()->params['files_path'] . '/' . $this->message->slug . '/';
+        $path = $this->message->getMessageDir() . '/attachments/';
+
+        $infix = '';
+        $i = 0;
         
-        if ($this->validate()) {
-            $this->file->saveAs($path . $this->file->baseName . '.' . $this->file->extension, false);
-            return true;
-        } else {
+        do {
+            $fileName = $path . $this->file->baseName . $infix . '.' . $this->file->extension;
+            $i++;
+            $infix = '_' . $i;
+        } while(file_exists($fileName));
+        
+        
+        if (!$this->validate() || !$this->file->saveAs($fileName, false)) {
+            \Yii::$app->addFlash('error', 'Fehler beim Speichern der Datei');
             return false;
         }
+                
+        $this->file->name = str_replace($path, '', $fileName);
+        
+        return true;
     }
 }

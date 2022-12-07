@@ -25,9 +25,9 @@ echo '<div class="row">';
 ContentTools::begin([
     'saveEngine' => ['save' => Url::current()],
     'imagesEngine' => [
-        'upload' => '/newsletter/message/content-tools-image-upload',
-        'rotate' => '/newsletter/message/content-tools-image-rotate',
-        'insert' => '/newsletter/message/content-tools-image-insert',
+        'upload' => '/newsletter/message/content-tools-image-upload?id=' . $model->id,
+        'rotate' => '/newsletter/message/content-tools-image-rotate?id=' . $model->id,
+        'insert' => '/newsletter/message/content-tools-image-insert?slug=' . $model->slug,
     ],
     'options' => ['class' => 'col-10 border']]);
 

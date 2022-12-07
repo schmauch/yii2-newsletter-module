@@ -57,5 +57,5 @@ foreach($checks as $key => $value) {
 }
 
 if (array_product($checks)) {
-    echo Html::a('Newsletter versenden', Url::to('queue'), ['class' => 'btn d-block btn-primary']);
+    echo Html::a('Newsletter versenden', Url::to(['queue', 'id' => $model->id]), ['class' => 'btn d-block btn-primary']);
 }

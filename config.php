@@ -14,7 +14,7 @@ return [
     ],
     'params' => [
         'files_path' => __DIR__ . '/mail/',
-        'template_path' => __DIR__ . '/views/templates/',
+        'template_path' => '/views/layouts/',
         'allowed_attachment_extensions' => ['jpg', 'png', 'gif', 'svg', 'pdf'],
         'senderEmail' => ['mail@roger-schmutz.ch' => 'Roger Schmutz'],
         'messages_limit' => 30,
