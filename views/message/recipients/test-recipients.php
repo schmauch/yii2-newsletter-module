@@ -22,6 +22,14 @@ $this->registerCss('#recipients .row:nth-of-type(odd) { background-color: rgba(0
 
 echo '<div id="recipients">';
 
+echo '
+<div class="form-group">' .
+    Html::button('Empfänger hinzufügen', [
+        'class' => 'btn btn-primary ml-0 my-3', 
+        'onclick' => 'addRecipient($("#recipients .row").length)'
+    ]) .
+'</div>';
+ 
 foreach($model->recipientsObject->recipients as $index => $recipient) {
     echo '<div class="row py-2">';
     foreach($placeholders as $placeholder) {
@@ -31,5 +39,3 @@ foreach($model->recipientsObject->recipients as $index => $recipient) {
 }
 
 echo '</div>';
-
-echo Html::button('Empfänger hinzufügen', ['class' => 'btn btn-primary ml-0 my-3', 'onclick' => 'addRecipient($("#recipients .row").length)']);

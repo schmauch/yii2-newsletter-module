@@ -21,6 +21,7 @@ $this->title = 'Bearbeite Newsletter: ' . $model->subject;
     
     <?= $this->render('_form', [
         'model' => $model,
+        'templates' => $templates,
     ]) ?>
 
 </div>

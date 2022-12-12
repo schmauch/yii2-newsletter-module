@@ -1,0 +1,8 @@
+Das ist nur ein Test.
+
+
+Aber mit <?= $placeholder ?>
+
+
+Und Bild:
+

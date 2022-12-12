@@ -12,8 +12,7 @@ use Yii;
  * @property string $subject
  * @property string|null $template
  * @property blob $recipients_class
- * @property string|null $send_date
- * @property string|null $send_time
+ * @property timestamp|null $send_at
  * @property int|null $mails_sent
  * @property int|null $blacklisted
  * @property string|null $completed_at
@@ -46,9 +45,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         return [
             [['slug'], 'string'],
             //[['subject'], 'required' => $this->isNewRecord],
-            [['send_date', 'send_time', 'completed_at'], 'safe'],
-            [['send_date'] , 'date', 'format' => 'php:Y-m-d'],
-            [['send_time'] , 'time', 'format' => 'php:H:i:s'],
+            [['send_at', 'completed_at'], 'safe'],
             [['mails_sent', 'blacklisted'], 'integer'],
             [['recipients_class'], 'string'],
             [['subject', 'template'], 'string', 'max' => 255],
@@ -143,7 +140,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
      */
     public function getPlaceholders()
     {
-        $pattern = '/\[\[([0-9A-Za-z_]+)\]\]/';
+        $pattern = '/<\?= \$([0-9A-Za-z_]+?) \?>/';
         $html = file_get_contents($this->getHtmlFile());
         $htmlCount = preg_match_all($pattern, $html, $htmlPlaceholders);
 
@@ -173,4 +170,41 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     {
         return \schmauch\newsletter\Module::getInstance()->params['files_path'] . $this->slug . '/';
     }
+    /**
+     * //...
+     */
+    public function isReadyToSend()
+    {
+        $checks['recipients'] = $this->getRecipientsObject()->dataProvider->getTotalCount() > 0;
+        
+        $checks['html'] = !empty(file_get_contents($this->getHtmlFile()));
+        $checks['text'] = !empty(file_get_contents($this->getTextFile()));
+        
+        $columnNames = [];
+        $columns = $this->getRecipientsObject()->getColumns();
+        
+        if (count($columns) === count($columns, true)) {
+            $columnNames = $columns;
+        } else {
+            foreach($columns as $index => $column) {
+                $columnNames[$index] = $column['header'] ?? '';
+            }
+        }
+        
+        $checks['placeholders'] = empty(
+            array_diff($this->getPlaceholders(),
+            $columnNames
+        ));
+        
+        $checks['attachments'] = true;
+        
+        foreach($this->newsletterAttachments as $attachment)
+        {
+            $checks['attachments'] *= is_readable($this->getMessageDir() . 'attachments/' . $attachment->file);
+        }
+         
+        
+        return $checks;
+    }
+    
 }

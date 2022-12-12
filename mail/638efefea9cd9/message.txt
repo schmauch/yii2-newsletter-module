@@ -1,7 +1,0 @@
-Hallo [[name]]
-
-
-Ich wünsche dir frohe Weihnachten!
-
-
-Gruss Roger

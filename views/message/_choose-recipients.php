@@ -6,12 +6,6 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="newsletter-message-update">
-
-<h1><?= Html::encode($this->title) ?></h1>
-
-<?= $this->render('_nav', ['id' => $model->id]) ?>
-
 <h2>Art der Empfänger</h2>
 <p>Hier kann ausgewählt werden, wie die Empfänger bereit gestellt werden.</p>
 

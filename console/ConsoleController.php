@@ -1,6 +1,6 @@
 <?php
 
-namespace schmauch\newsletter\commands;
+namespace schmauch\newsletter\console;
 
 use schmauch\newsletter\models\NewsletterMessage;
 
@@ -38,16 +38,11 @@ class ConsoleController extends \yii\console\Controller
     
     public function actionRun()
     {
-        $message = NewsletterMessage::findOne($this->id);
-        if (!empty($message->pid)) {
-            return $this->redirect(['status', 'id' => $id]);
-        }
-        
+        $model = NewsletterMessage::findOne($this->id);
         $this->queue = $this->module->queue;
-        $this->queue->channel = $message->slug;
-        echo '[' . date('Y-m-d H:i:s') . '] Warte auf Queue: ' . $this->queue->channel . "\n\n";
-        $message->pid = $this->queue->run(true);
-        $message->save();
+        $this->queue->channel = $model->slug;
+        echo '[' . date('Y-m-d H:i:s') . '] Warte auf Queue: ' . $this->queue->channel;
+        $pid = $this->queue->run(true);
         return $pid;
     }
 }

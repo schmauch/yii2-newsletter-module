@@ -20,6 +20,7 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
 {
     public $message_id;
     public $recipient;
+    public $channel;
     
     /**
      * @inheritdoc
@@ -27,7 +28,7 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
     public function execute($queue)
     {
         $module = NewsletterModule::getInstance();
-        $newsletter = NewsletterMessage::findOne($this->message_id)
+        $newsletter = NewsletterMessage::findOne($this->message_id);
                 
         if (isset($module->params['senderEmail'])) {
             $from =  $module->params['senderEmail'];
@@ -43,7 +44,9 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         $mailer->viewPath = $newsletter->getMessageDir();
 
         $mailer->htmlLayout = '@schmauch/newsletter/' . 
-            $this->module->params['template_path'] . $newsletter->template . '/html';
+            $module->params['template_path'] . $newsletter->template . '/html';
+            
+        
 
         $embed = [];
         $attachments = [];
@@ -56,43 +59,40 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
             }
         }
         
+        if(!is_array($this->recipient)) {
+            $this->recipient = new \ArrayObject($this->recipient);
+        }
+        
+        foreach($newsletter->recipientsObject->getColumns() as $column) {
+            $params[$column] = $this->recipient[$column];
+        }
+        
         $message = $mailer->compose([
                     'html' => 'message.html',
                     'txt' => 'message.txt'],
-                    [
-                        $embed, 
-                        $params,
-                    ],
-        ]);
+                    $params,
+                    $embed, 
+        );
         
         if (!is_a($message, '\yii\mail\MessageInterface')) {
             die('Keine Message!');
         }
         
+        $message->setFrom($from);
+        $message->setTo($this->recipient['email']);
+        $message->setSubject($newsletter->subject);
+
         foreach($attachments as $attachment) {
             $message->attach($attachment);
         }
         
-        
-        if(is_object($this->recipient)) {
-            $message->setTo($this->recipient->email);
-            foreach($newsletter->getColumns() as $column) {
-                $params[$column] => $this->recipient->$column;
-            }
-        } else {
-            $message->setTo($this->recipient->email);
-            foreach($newsletter->getColumns() as $column) {
-                $params[$column] => $this->recipient->$column;
-            }
-        }
-        
-        $message->setSubject($newsletter->subject);
-        $message->setFrom($from);
-        
         if($mailer->send($message)) {
-            Console::stdout(
+            /*Console::stdout(
                 'verarbeite ' . 
-                Console::ansiFormat($this->recipient, [Console::FG_GREEN]) . "\n");
+                Console::ansiFormat($this->recipient->email, [Console::FG_GREEN]) . "\n");*/
+            echo '[' . date('Y-m-d H:i:s') . '] verarbeite ' . $this->recipient['email'] . "\n";
+            $newsletter->mails_sent++;
+            $newsletter->save();
         }
     }
 }

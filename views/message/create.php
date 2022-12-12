@@ -17,6 +17,7 @@ $this->title = 'Create Newsletter Message';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'templates' => $templates,
     ]) ?>
 
 </div>

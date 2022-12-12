@@ -29,7 +29,7 @@ class ImageInsertAction extends Action
         
         $this->uploadDir = \schmauch\newsletter\Module::getInstance()->params['files_path'] . $slug . '/attachments/';
         
-        $this->viewPath = \Yii::getAlias('@web/newsletter/message/image/?slug=' . $slug . '&img=');
+        $this->viewPath = \Yii::getAlias('@web/newsletter/attachment/image/?slug=' . $slug . '&img=');
 
         try {
             $data = Yii::$app->request->post();

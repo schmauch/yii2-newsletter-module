@@ -11,10 +11,10 @@ echo '<h1>' . $this->title . '</h1>';
 
 echo $this->render('_nav', ['id' => $model->id]);
 
-echo '<h3>Verfügbare Attachments</h3><ul>';
+echo '<h3>Verfügbare Attachments</h3><ul class="list-group mb-3">';
  
 foreach($model->newsletterAttachments as $attachment) {
-    echo '<li>' . $attachment->file . '</li>';
+    echo '<li class="list-group-item">' . $attachment->file . '</li>';
 }
 
 echo '</ul>';

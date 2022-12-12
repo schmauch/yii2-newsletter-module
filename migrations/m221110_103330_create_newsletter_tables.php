@@ -19,10 +19,10 @@ class m221110_103330_create_newsletter_tables extends Migration
             'template' => $this->string(),
             'recipients_class' => $this->text(),
             'recipients_config' => $this->text(),
-            'send_date' => $this->date(),
-            'send_time' => $this->time(),
+            'send_at' => $this->timestamp(),
             'mails_sent' => $this->integer(),
             'blacklisted' => $this->integer(),
+            'pid' => $this->integer(),
             'completed_at' => $this->datetime(),
         ]);
         
