@@ -95,7 +95,7 @@ class BlacklistController extends Controller
         $model->email = $email;
         
         if ($this->request->isPost) {
-            $model->added_at = date('c');
+            $model->added_at = mktime();
             if(!$model->validate()) {
                 \Yii::$app->session->setFlash('error', 'Die E-Mail-Adresse ' . $model->email . ' konnte nicht aus der Liste entfernt werden.');
             }

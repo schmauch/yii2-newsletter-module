@@ -40,6 +40,16 @@ class MessageController extends Controller
         );
     }
     
+    public function actionFoo()
+    {
+        $html = '@schmauch/newsletter/mail/638efefea9cd9/message.html';
+        $text = '@schmauch/newsletter/mail/638efefea9cd9/message.txt';
+        
+        $this->layout = '@schmauch/newsletter/views/layouts/default/html';
+        
+        return $this->render($html);
+    }
+    
     /**
      * Lists all NewsletterMessage models.
      *

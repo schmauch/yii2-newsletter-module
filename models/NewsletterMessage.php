@@ -24,6 +24,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     
     public $html;
     public $text;
+    public $send_date;
+    public $send_time;
     
     protected $recipientsObject;
     
@@ -46,6 +48,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             [['slug'], 'string'],
             //[['subject'], 'required' => $this->isNewRecord],
             [['send_at', 'completed_at'], 'safe'],
+            [['send_date'], 'date', 'format' => \Yii::$app->formatter->dateFormat],
+            [['send_time'], 'time', 'format' => \Yii::$app->formatter->timeFormat],
             [['mails_sent', 'blacklisted'], 'integer'],
             [['recipients_class'], 'string'],
             [['subject', 'template'], 'string', 'max' => 255],
@@ -95,7 +99,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         }
         
         if(!class_exists($class)) {
-            throw new \Exception('Klasse ' . $class . ' gibt es nicht');
+            //throw new \Exception('Klasse ' . $class . ' gibt es nicht');
+            return false;
         }
         
         $this->recipientsObject = new $class($config);
@@ -141,7 +146,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     public function getPlaceholders()
     {
         $pattern = '/<\?= \$([0-9A-Za-z_]+?) \?>/';
-        $html = file_get_contents($this->getHtmlFile());
+        $html = file_get_contents($this->getHtmlFile()) ?? '';
         $htmlCount = preg_match_all($pattern, $html, $htmlPlaceholders);
 
         $text  = file_get_contents($this->getTextFile());
@@ -175,6 +180,12 @@ class NewsletterMessage extends \yii\db\ActiveRecord
      */
     public function isReadyToSend()
     {
+        if(!$this->getRecipientsObject() || empty($this->getRecipientsObject()->dataProvider)) {
+            $checks['recipients_object'] = false;
+            return $checks;
+        }
+        
+        
         $checks['recipients'] = $this->getRecipientsObject()->dataProvider->getTotalCount() > 0;
         
         $checks['html'] = !empty(file_get_contents($this->getHtmlFile()));
