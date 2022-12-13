@@ -41,8 +41,14 @@ class ConsoleController extends \yii\console\Controller
         $message = NewsletterMessage::findOne($this->id);
         $this->queue = $this->module->queue;
         $this->queue->channel = $message->slug;
+        
         echo '[' . date('Y-m-d H:i:s') . '] Warte auf Queue: ' . $this->queue->channel;
+        
+        if (Yii::$app instanceof Yii\console\Application) {
+            $message->pid = getmypid();
+            $message->save();
+        }
+        
         return $this->queue->run(true);
-         
     }
 }
