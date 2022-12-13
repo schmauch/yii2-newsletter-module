@@ -64,5 +64,5 @@ foreach($checks as $key => $value) {
 if (array_product($checks) && empty($model->pid)) {
     echo Html::a('Newsletter versenden', Url::to(['queue/queue', 'id' => $model->id]), ['class' => 'btn d-block btn-primary']);
 } else {
-    echo Html::a('Versandbericht ansehen', Url::to(['status', 'id' => $model->id]), ['class' => 'btn d-block btn-primary']);
+    echo Html::a('Versandbericht ansehen', Url::to(['queue/status', 'id' => $model->id]), ['class' => 'btn d-block btn-primary']);
 }

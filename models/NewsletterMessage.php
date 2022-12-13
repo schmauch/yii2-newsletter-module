@@ -42,7 +42,7 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     
     public function beforeValidate()
     {
-        if(substr_count($this->send_time, ':') < 2) {
+        if(!empty($this->send_time) && substr_count($this->send_time, ':') < 2) {
             $this->send_time .= ':00';
         }
         return true;

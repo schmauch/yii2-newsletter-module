@@ -2,14 +2,15 @@
 
 namespace schmauch\newsletter\controllers;
 
+use gri3li\yii2csvdataprovider\CsvDataProvider;
+
+use schmauch\newsletter\models\NewsletterAttachment;
 use schmauch\newsletter\models\NewsletterBlacklist;
 use schmauch\newsletter\models\NewsletterMessage;
 use schmauch\newsletter\models\NewsletterMessageSearch;
-use schmauch\newsletter\models\NewsletterAttachment;
 use schmauch\newsletter\models\RecipientsInterface;
 
-use gri3li\yii2csvdataprovider\CsvDataProvider;
-
+use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
 use yii\helpers\Url;
 use yii\helpers\Json;
@@ -58,12 +59,13 @@ class MessageController extends Controller
     public function actionIndex($archive = false)
     {
         Url::remember();
+         
         $searchModel = new NewsletterMessageSearch();
-        $dataProvider = $searchModel->search([]);
-        /*
+        $dataProvider = $searchModel->search($this->request->queryParams);
+        
         if (!$archive) {
             $dataProvider->query->andWhere(['completed_at' => null]);
-        }*/
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,

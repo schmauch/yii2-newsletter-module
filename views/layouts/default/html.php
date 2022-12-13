@@ -84,7 +84,7 @@ use yii\helpers\Url;
             <td colspan="3">
                 <p>
                     Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich
-                    <a href="<?= Url::to(['blacklist/sign-off'], true) ?>">
+                    <a href="<?= Url::to(['blacklist/sign-off', 'email' => $message->to], true) ?>">
                         vom Newsletter abmelden
                     </a>
                 </p>

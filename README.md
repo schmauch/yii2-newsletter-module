@@ -19,4 +19,46 @@ or add
 
 to the require section of your composer.json.
 
+### Migrate database
+
+```
+./yii migrate/up --migrationPath="vendor/schmauch/yii2-newsletter-module/migrations/"
+```
+
+### Add module to config file
+
+```
+    'modules' => [
+        'newsletter' => schmauch\newsletter\Module::class,
+        ...
+    ],
+```
+
+### Configure mailer
+
+Make shure you have a working mailer configured that derives from `\yii\base\Mailer`.
+
+
+### Configure console
+
+Add module to console config file
+
+```
+    'modules' => [
+        'newsletter' => schmauch\newsletter\Module::class,
+        ...
+    ],
+```
+and make it avaliabla in bootstrap
+
+```
+    'bootstrap' => [
+        'newsletter',
+        ...
+    ],
+```
+
+Configure url manager
+
+
 ## Usage

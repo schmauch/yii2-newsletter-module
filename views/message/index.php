@@ -10,6 +10,9 @@ use yii\grid\GridView;
 /** @var common\NewsletterMessageSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
+//print_r($dataProvider->query);
+//die();
+
 $this->title = 'Newsletter Messages';
 ?>
 <div class="newsletter-message-index">

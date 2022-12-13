@@ -42,7 +42,7 @@ class ConsoleController extends \yii\console\Controller
         $this->queue = $this->module->queue;
         $this->queue->channel = $message->slug;
         
-        echo '[' . date('Y-m-d H:i:s') . '] Warte auf Queue: ' . $this->queue->channel;
+        echo '[' . date('Y-m-d H:i:s') . '] Warte auf Queue: ' . $this->queue->channel . "\n";
         
         if (\Yii::$app instanceof Yii\console\Application) {
             $message->pid = getmypid();

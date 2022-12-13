@@ -44,10 +44,6 @@ class NewsletterMessageSearch extends NewsletterMessage
 
         // add conditions that should always apply here
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
         $this->load($params);
 
         if (!$this->validate()) {
@@ -65,9 +61,13 @@ class NewsletterMessageSearch extends NewsletterMessage
             'blacklisted' => $this->blacklisted,
             'completed_at' => $this->completed_at,
         ]);
-
+        
         $query->andFilterWhere(['like', 'subject', $this->subject])
             ->andFilterWhere(['like', 'template', $this->template]);
+        
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
 
         return $dataProvider;
     }
