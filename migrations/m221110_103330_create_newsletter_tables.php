@@ -53,7 +53,7 @@ class m221110_103330_create_newsletter_tables extends Migration
         $this->createTable('newsletter_blacklist', [
             'id' => $this->primaryKey(),
             'email' => $this->string()->notNull()->unique(),
-            'added_at' => $this->datetime()->notNull(),
+            'added_at' => $this->timestamp()->notNull(),
         ]);         
     }
 

@@ -42,7 +42,8 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         }
         
         $mailer->viewPath = $newsletter->getMessageDir();
-
+        
+        //.. Hat das überhaupt einen Effekt?
         $mailer->htmlLayout = '@schmauch/newsletter/' . 
             $module->params['template_path'] . $newsletter->template . '/html';
             

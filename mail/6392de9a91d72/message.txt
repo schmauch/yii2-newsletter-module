@@ -1,8 +1,0 @@
-Hallo <?= $name ?>
-
-
-Ich wünsche dir fröhliche Weihnachten.
-
-
-
-Gruss Roger

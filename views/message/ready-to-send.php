@@ -10,6 +10,10 @@ echo '<h1>' . $this->title . '</h1>';
 echo $this->render('_nav', ['id' => $model->id]);
 
 $messages = [
+    'recipients_object' => [
+        'Es gibt keine Empfänger-Klasse.',
+        'Empfänger-Klasse &#x2192; ok'
+    ],
     'recipients' => [
         'Die Liste der Empfänger ist leer',
         'Empfänger &#x2192; ok'
@@ -33,6 +37,7 @@ $messages = [
 ];
 
 $links = [
+    'recipients_object' => 'choose-recipients',
     'recipients' => 'choose-recipients',
     'html' => 'edit-html',
     'text' => 'edit-text',

@@ -1,2 +1,5 @@
 # Sicherungskopien ausschliessen
 *~
+
+# Message folder ausschliessen
+/mail/

@@ -23,6 +23,10 @@ class QueueController extends Controller
             $this->message = NewsletterMessage::findOne($_GET['id']);
         }
         
+        if (empty($this->message)) {
+            throw new \Exception('Keine Nachricht gefunden.');
+        }
+        
         return true;
     }
     
@@ -119,9 +123,8 @@ class QueueController extends Controller
     public function actionRun($id)
     {
         $logFile = $this->message->getMessageDir() . 'queue.log';
-        $command = realpath(\Yii::getAlias('@app/../yii')) . ' newsletter/console/run --id=' . $id . '>> ' . $logFile . ' 2>&1 &';
-        exec($command);
-        $this->message->pid = exec('echo $!');
+        $command = realpath(\Yii::getAlias('@app/../yii')) . ' newsletter/console/run --id=2>' . $id . '>> ' . $logFile . ' 2>&1 & echo $!';
+        $this->message->pid = exec($command);
         $this->message->save();
         return $this->redirect(['status', 'id' => $id]);
     }
