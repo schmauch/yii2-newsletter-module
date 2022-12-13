@@ -2,14 +2,6 @@
 
 use yii\helpers\Url;
 
-        $message = new class { 
-            public $subject = 'Weihnachtsgruss';
-            public function embed($file) {
-                echo str_replace('/home/schmauch/www/', 'http://localhost/', $file);
-            }
-        };
-        
-
 ?> 
 <?php $this->beginPage() ?>
 <!doctype html>

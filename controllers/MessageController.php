@@ -59,11 +59,11 @@ class MessageController extends Controller
     {
         Url::remember();
         $searchModel = new NewsletterMessageSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        
+        $dataProvider = $searchModel->search([]);
+        /*
         if (!$archive) {
             $dataProvider->query->andWhere(['completed_at' => null]);
-        }
+        }*/
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -257,11 +257,11 @@ class MessageController extends Controller
         $model = $this->findModel($id);
         
         if ($this->request->isPost) {
-        //print_r($_POST);
-        //die();
 
             $newClass = $this->request->post('NewsletterMessage')['recipients_class'] ?? false;
-
+            
+            
+            
             if ($newClass && $newClass != $model->recipients_class) {
                 $model->recipients_class = $newClass;
                 $model->recipients_config = null;
@@ -272,8 +272,11 @@ class MessageController extends Controller
                     $model->recipients_config = serialize($recipientsObject->attributes);
                 }
             }
-            
-            $model->save();
+            if(!$model->save()) {
+                foreach($model->getErrors() as $attribute => $error) {
+                    \Yii::$app->session->addFlash('error', implode('<br>', $error));
+                }
+            }
         }
                 
         // Scan dir for possible options
@@ -370,6 +373,8 @@ class MessageController extends Controller
                 
         $htmlFile = $path . 'message.html';
         $textFile = $path . 'message.txt';
+        $logFile = $path . 'queue.log';
+        
         $attachmentsDir = $path . 'attachments';
         
         // create an empty html file
@@ -383,6 +388,13 @@ class MessageController extends Controller
         if (!is_file($textFile)) {
             if (!touch($textFile) || !chmod($textFile, 0666)) {
                 throw new Exception('Text File konnte nicht erstellt werden.');
+            }
+        }
+        
+        // create an empty log file
+        if (!is_file($logFile)) {
+            if (!touch($logFile) || !chmod($logFile, 0666)) {
+                throw new Exception('Log File konnte nicht erstellt werden.');
             }
         }
         

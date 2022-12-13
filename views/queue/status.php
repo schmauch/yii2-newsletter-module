@@ -7,17 +7,12 @@ $this->registerMetaTag([
     'content' => '30',
 ]);
 
-$send_at = 'jetzt';
-if (!empty($model->send_at)) {
-    $send_at = DateTime::createFromFormat('Y-m-d H:i:s',$model->send_at)->format('d.m.Y H:i:s');
-}
-
 
 $this->title = 'Versende Newsletter: ' . $model->subject;
 
 $states = [
     'waiting'     => 'in Warteschlange',
-    'delayed'     => 'terminiert auf: ' . $send_at,
+    'delayed'     => 'terminiert auf ' . $model->send_date . ' um ' . $model->send_time . ' Uhr',
     'reserved'    => 'in Bearbeitung',
     'done'        => 'gesendet',
 ];

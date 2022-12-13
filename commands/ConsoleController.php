@@ -39,15 +39,16 @@ class ConsoleController extends \yii\console\Controller
     public function actionRun()
     {
         $message = NewsletterMessage::findOne($this->id);
-        if (!empty($message->pid)) {
-            return $this->redirect(['status', 'id' => $id]);
-        }
-        
         $this->queue = $this->module->queue;
         $this->queue->channel = $message->slug;
-        echo '[' . date('Y-m-d H:i:s') . '] Warte auf Queue: ' . $this->queue->channel . "\n\n";
-        $message->pid = $this->queue->run(true);
-        $message->save();
-        return $pid;
+        
+        echo '[' . date('Y-m-d H:i:s') . '] Warte auf Queue: ' . $this->queue->channel;
+        
+        if (\Yii::$app instanceof Yii\console\Application) {
+            $message->pid = getmypid();
+            $message->save();
+        }
+        
+        return $this->queue->run(true);
     }
 }

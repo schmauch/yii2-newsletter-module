@@ -65,17 +65,19 @@ class QueueController extends Controller
                     continue;
                 }
                 
-                $now = new \DateTime();
-                if (!empty($this->message->send_at)) {
-                    $sendAt = \DateTime::createFromFormat('Y-m-d H:i:s', $this->message->send_at);
-                } else {
-                    $sendAt = new \DateTime();
-                }
                 
-                $delay = $sendAt->getTimestamp() - $now->getTimestamp();
-                if ($delay < 0) { 
+                $now = time();
+
+                $atom = $this->message->send_date . 'T' . 
+                    $this->message->send_time . date('P');
+                $sendAt = new \DateTime($atom);
+                
+                $delay = $sendAt->getTimestamp() - $now;
+                
+                if($delay < 0) {
                     $delay = 0;
                 }
+                
                 $delay += $i * $messages_delay;
                 $delay += rand(1, $messages_delay / $messages_limit);
                 
@@ -123,10 +125,11 @@ class QueueController extends Controller
     public function actionRun($id)
     {
         $logFile = $this->message->getMessageDir() . 'queue.log';
-        $command = realpath(\Yii::getAlias('@app/../yii')) . ' newsletter/console/run --id=2>' . $id . '>> ' . $logFile . ' 2>&1 & echo $!';
+        $command = realpath(\Yii::getAlias('@app/../yii')) . ' newsletter/console/run --id=' . $id . ' >> ' . $logFile . ' 2>&1 & echo $!';
         $this->message->pid = exec($command);
         $this->message->save();
         return $this->redirect(['status', 'id' => $id]);
+        
     }
     
     

@@ -12,7 +12,8 @@ use Yii;
  * @property string $subject
  * @property string|null $template
  * @property blob $recipients_class
- * @property timestamp|null $send_at
+ * @property date|null $send_date
+ * @property time|null $send_time
  * @property int|null $mails_sent
  * @property int|null $blacklisted
  * @property string|null $completed_at
@@ -24,8 +25,8 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     
     public $html;
     public $text;
-    public $send_date;
-    public $send_time;
+    /*public $send_date;
+    public $send_time;*/
     
     protected $recipientsObject;
     
@@ -38,6 +39,15 @@ class NewsletterMessage extends \yii\db\ActiveRecord
     }
     
     
+    
+    public function beforeValidate()
+    {
+        if(substr_count($this->send_time, ':') < 2) {
+            $this->send_time .= ':00';
+        }
+        return true;
+    }
+    
 
     /**
      * {@inheritdoc}
@@ -47,9 +57,9 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         return [
             [['slug'], 'string'],
             //[['subject'], 'required' => $this->isNewRecord],
-            [['send_at', 'completed_at'], 'safe'],
-            [['send_date'], 'date', 'format' => \Yii::$app->formatter->dateFormat],
-            [['send_time'], 'time', 'format' => \Yii::$app->formatter->timeFormat],
+            [['send_date', 'send_time', 'completed_at'], 'safe'],
+            [['send_date'], 'date', 'format' => 'php:Y-m-d'],
+            [['send_time'], 'time', 'format' => 'php:H:i:s'],
             [['mails_sent', 'blacklisted'], 'integer'],
             [['recipients_class'], 'string'],
             [['subject', 'template'], 'string', 'max' => 255],
@@ -69,14 +79,15 @@ class NewsletterMessage extends \yii\db\ActiveRecord
             'subject' => 'Subject',
             'template' => 'Template',
             'recipients_class' => 'Recipients Object',
-            'send_at' => 'Send At',
+            'send_date' => 'Datum',
+            'send_time' => 'Uhrzeit',
             'completed_at' => 'Completed At',
             'blacklisted' => 'Blacklisted',
         ];
     }
     
     
-    
+        
     /**
      * Retrurns the recipients object
      */

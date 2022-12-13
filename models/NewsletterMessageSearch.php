@@ -18,7 +18,7 @@ class NewsletterMessageSearch extends NewsletterMessage
     {
         return [
             [['id', 'blacklisted', 'mails_sent'], 'integer'],
-            [['subject', 'template', 'send_at', 'completed_at'], 'safe'],
+            [['subject', 'template', 'send_date', 'send_time', 'completed_at'], 'safe'],
         ];
     }
 
@@ -59,7 +59,8 @@ class NewsletterMessageSearch extends NewsletterMessage
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'send_at' => $this->send_at,
+            'send_date' => $this->send_date,
+            'send_time' => $this->send_time,
             'mails_sent' => $this->mails_sent,
             'blacklisted' => $this->blacklisted,
             'completed_at' => $this->completed_at,

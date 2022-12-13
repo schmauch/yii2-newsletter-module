@@ -12,12 +12,12 @@ class TestRecipients extends Model implements RecipientsInterface
 {
     public $recipients = [];
     
-    public function rules()
+    /*public function rules()
     {
         return [
             [['recipients'], 'string'],
         ];
-    }
+    }*/
     
     
     
@@ -44,4 +44,5 @@ class TestRecipients extends Model implements RecipientsInterface
         
         return array_keys($recipient);
     }
+    
 }

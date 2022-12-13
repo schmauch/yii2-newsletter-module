@@ -23,8 +23,8 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'recipients_file') ?>
 
-    <?php // echo $form->field($model, 'send_at') ?>
-
+    <?php // echo $form->field($model, 'send_date') ?>
+    
     <?php // echo $form->field($model, 'completed_at') ?>
 
     <?php // echo $form->field($model, 'blacklisted') ?>

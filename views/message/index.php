@@ -31,7 +31,7 @@ $this->title = 'Newsletter Messages';
             'id',
             'subject',
             'template',
-            'send_at',
+            'send_date',
             'mails_sent',
             'blacklisted',
             'completed_at',
