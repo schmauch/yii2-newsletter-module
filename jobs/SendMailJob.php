@@ -4,6 +4,7 @@ namespace schmauch\newsletter\jobs;
 
 use yii\base\BaseObject;
 use yii\helpers\Console;
+use yii\helpers\Url;
 
 use schmauch\newsletter\Module as NewsletterModule;
 use schmauch\newsletter\models\NewsletterMessage as NewsletterMessage;
@@ -30,12 +31,23 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         $module = NewsletterModule::getInstance();
         $newsletter = NewsletterMessage::findOne($this->message_id);
                 
-        if (isset($module->params['senderEmail'])) {
-            $from =  $module->params['senderEmail'];
+        if (isset($module->senderEmail)) {
+            if (isset($module->senderName)) {
+                $from = [$module->senderEmail => $module->senderName];
+            } else {
+                $from = $module->senderEmail;
+            }
         } else {
-            $from = \Yii::$app->params['senderEmail'];
+            $senderEmail = \Yii::$app->params['senderEmail'] ?? 'noreply@example.com';
+            if (isset(\Yii::$app->params['senderName'])) {
+                $from = [$senderEmail => \Yii::$app->params['senderName']];
+            } else {
+                $from = $senderEmail;
+            }
         }
-         
+        
+        
+        
         $mailer = \Yii::$app->mailer;
         if (!is_a($mailer, '\yii\mail\MailerInterface')) {
             die('Kein Mailer!');

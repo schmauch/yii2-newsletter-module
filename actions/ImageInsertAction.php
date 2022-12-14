@@ -27,7 +27,7 @@ class ImageInsertAction extends Action
             throw new InvalidParamException('Parameter "slug" is missing!');
         }
         
-        $this->uploadDir = \schmauch\newsletter\Module::getInstance()->params['files_path'] . $slug . '/attachments/';
+        $this->uploadDir = \schmauch\newsletter\Module::getInstance()->files_path . $slug . '/attachments/';
         
         $this->viewPath = \Yii::getAlias('@web/newsletter/attachment/image/?slug=' . $slug . '&img=');
 

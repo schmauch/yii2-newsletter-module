@@ -13,11 +13,13 @@ return [
         ],
     ],
     'params' => [
+        'defaultRoute' => 'default',
         'files_path' => __DIR__ . '/mail/',
         'template_path' => '/views/layouts/',
         'allowed_attachment_extensions' => ['jpg', 'png', 'gif', 'svg', 'pdf'],
-        'senderEmail' => ['mail@roger-schmutz.ch' => 'Roger Schmutz'],
+        'senderEmail' => \Yii::$app->params['senderEmail'],
+        'senderName' => \Yii::$app->params['senderName'],
         'messages_limit' => 30,
-        'messages_delay' => 300, 
+        'messages_delay' => 360, 
     ],
 ];

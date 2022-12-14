@@ -38,8 +38,8 @@ class QueueController extends Controller
      {
         $checks = $this->message->isReadyToSend($this->message);
         
-        $messages_limit = $this->module->params['messages_limit'] ?? 1;
-        $messages_delay = $this->module->params['messages_delay'] ?? 1;
+        $messages_limit = $this->module->messages_limit ?? 30;
+        $messages_delay = $this->module->messages_delay ?? 360;
         
         // show errors if newsletter isn't ready to send
         if (!array_product($checks)) {
@@ -47,7 +47,7 @@ class QueueController extends Controller
         }
         
         $dataProvider = $this->message->recipientsObject->getDataProvider();
-        $dataProvider->getPagination()->setPageSize($this->module->params['messages_limit']);
+        $dataProvider->getPagination()->setPageSize($messages_limit);
 
         $pages = ceil($dataProvider->getTotalCount() / 
             $dataProvider->getPagination()->getPageSize());

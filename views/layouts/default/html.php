@@ -7,7 +7,7 @@ use yii\helpers\Url;
 <!doctype html>
 <html lang="de">
 <head>
-    <title><?php //$message->subject ?> Subject</title>
+    <title><?php echo $message->subject ?></title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">

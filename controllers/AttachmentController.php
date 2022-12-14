@@ -72,7 +72,7 @@ class AttachmentController extends Controller
     public function actionImage($slug, $img)
     {
         $img = preg_replace('|\?_ignore=[0-9]+|', '', $img);
-        $file = \schmauch\newsletter\Module::getInstance()->params['files_path'] . $slug . '/attachments/' . $img;
+        $file = \schmauch\newsletter\Module::getInstance()->files_path . $slug . '/attachments/' . $img;
         $type = mime_content_type($file);
                 
         $response = \Yii::$app->response;

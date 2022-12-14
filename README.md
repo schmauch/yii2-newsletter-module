@@ -29,7 +29,9 @@ to the require section of your composer.json.
 
 ```
     'modules' => [
-        'newsletter' => schmauch\newsletter\Module::class,
+        'newsletter' => [
+            'class' => schmauch\newsletter\Module::class,
+            'defaultRoute' => 'default',
         ...
     ],
 ```

@@ -353,7 +353,7 @@ class MessageController extends Controller
      */
     protected function initFileStructure($slug)
     {
-        $path = $this->module->params['files_path'];
+        $path = $this->module->files_path;
         
         if (!is_dir($path)) {
             throw new \yii\base\InvalidConfigException(
@@ -417,7 +417,7 @@ class MessageController extends Controller
     protected function getTemplates()
     {
         $templatePath = realpath(\Yii::getAlias('@schmauch/newsletter/') . 
-            $this->module->params['template_path']) . '/';
+            $this->module->template_path) . '/';
             
         $templates = scandir($templatePath);
         
