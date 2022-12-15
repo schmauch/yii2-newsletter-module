@@ -6,7 +6,7 @@ use yii\helpers\Url;
 $this->title = 'Willkommen im Newsletter Module';
 
 ?>
-<div class="jumbotron">
+<div class="jumbotron text-center mb-5">
     <h1><?= Html::encode($this->title) ?></h1>
     <p class="lead">
         Hier können Newsletter gestaltet, die Empfänger definiert und die
@@ -27,7 +27,7 @@ $this->title = 'Willkommen im Newsletter Module';
                 nach Newslettern suchen.
             </p>
             <p>
-                <a href="<?= Url::to(['message/index']) ?>" class="btn btn-light">
+                <a href="<?= Url::to(['message/index']) ?>" class="btn btn-outline-secondary">
                     Liste ansehen
                 </a>
             </p>
@@ -43,7 +43,7 @@ $this->title = 'Willkommen im Newsletter Module';
                 angeschrieben werden.
             </p>
             <p>
-                <a href="<?= Url::to(['blacklist/index']) ?>" class="btn btn-light">
+                <a href="<?= Url::to(['blacklist/index']) ?>" class="btn btn-outline-secondary">
                     Schwarze Liste ansehen/bearbeiten
                 </a>
             </p>
@@ -55,7 +55,7 @@ $this->title = 'Willkommen im Newsletter Module';
                 Hier können Sie alle nötigen Einstellungen vornehmen.
             </p>
             <p>
-                <a href="<?= Url::to(['default/settings']) ?>" class="btn btn-light">
+                <a href="<?= Url::to(['default/settings']) ?>" class="btn btn-outline-secondary">
                     Einstellungen ansehen/bearbeiten
                 </a>
             </p>

@@ -29,18 +29,17 @@ $this->title = 'Newsletter Messages';
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
             'subject',
             'template',
             'send_date',
+            'send_time',
             'mails_sent',
             'blacklisted',
             'completed_at',
             [
                 'class' => ActionColumn::className(),
                 'template' => '{update} {delete}',
+                'buttonOptions' => ['class' => 'btn btn-secondary'],
                 'urlCreator' => function ($action, $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
