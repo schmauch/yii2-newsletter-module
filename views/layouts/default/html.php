@@ -79,7 +79,7 @@
             <td colspan="3">
                 <p>
                     Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich
-                    <a href="https://www.girardi.ch/newsletter/sign-off?email<?php echo $this->email ?>">
+                    <a href="https://www.girardi.ch/newsletter/sign-off?email<?php echo $message->getTo() ?>">
                         vom Newsletter abmelden
                     </a>
                 </p>

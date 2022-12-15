@@ -4,7 +4,7 @@ ARTHUR GIRARDI AG
 <?= $content ?>
 
 Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich unter folgendem Link vom Newsletter abmelden:
-https://www.girardi.ch/newsletter/sign-off?email=<?php echo $this->email ?>
+https://www.girardi.ch/newsletter/sign-off?email=<?php echo $message->getTo() ?>
 
 
 Arthur Girardi AG           Tel. 043 322 66 99
