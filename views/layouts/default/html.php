@@ -85,7 +85,7 @@
                 <p>&nbsp;</p>
                 <p>
                     Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich
-                    <a href="https://www.girardi.ch/newsletter/sign-off?email=<?= $this->params['email'] ?>">
+                    <a href="https://newsletter.girardi.ch/list/sign-off?email=<?= $this->params['email'] ?>">
                         vom Newsletter abmelden
                     </a>
                 </p>
