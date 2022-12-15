@@ -16,7 +16,7 @@ class BlacklistAction extends Action
      */
     public function run($email = null)
     {
-        $this->controller->viewPath = '@schmauch/yii2-newsletter-module/views/blacklist/';
+        $this->controller->viewPath = '@vendor/schmauch/yii2-newsletter-module/views/blacklist/';
         
         $email = $this->controller->request->post('NewsletterBlacklist')['email'] ?? $email;
         
