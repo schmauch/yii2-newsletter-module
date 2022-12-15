@@ -104,7 +104,7 @@
                         </td class="innerTd">
                         <td class="innerTd" style="text-align: right;">
                             <img alt="logo.png" 
-                                src="<?php $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
+                                src="<?= $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
                                 width="113" height="100">
                         </td>
                         <td class="right">&nbsp;
