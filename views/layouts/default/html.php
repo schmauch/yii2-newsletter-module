@@ -81,8 +81,8 @@
             <td class="right">&nbsp;</td>
         </tr>
         <tr class="footer">
-            <p>&nbsp;</p>
             <td colspan="3">
+                <p>&nbsp;</p>
                 <p>
                     Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich
                     <a href="https://www.girardi.ch/newsletter/sign-off?email=<?= $this->params['email'] ?>">
@@ -104,7 +104,7 @@
                         </td class="innerTd">
                         <td class="innerTd" style="text-align: right;">
                             <img alt="logo.png" 
-                                src="<?php // $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
+                                src="<?php $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
                                 width="113" height="100">
                         </td>
                         <td class="right">&nbsp;
