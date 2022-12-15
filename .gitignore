@@ -2,4 +2,4 @@
 *~
 
 # Message folder ausschliessen
-/mail/
+/mail/*
