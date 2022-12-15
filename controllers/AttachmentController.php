@@ -11,10 +11,36 @@ use yii\web\UploadedFile;
 
 class AttachmentController extends Controller
 {
-    public function actionTest()
+    
+    /**
+     * @inheritDoc
+     */
+    public function behaviors()
     {
-        return $this->render('test');
+        return array_merge(
+            parent::behaviors(),
+            [
+                'verbs' => [
+                    'class' => VerbFilter::className(),
+                    'actions' => [
+                        'delete' => ['POST'],
+                    ],
+                ],
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],            
+            ],
+        );
     }
+    
+
+
     /**
      * {@inheritdoc}
      */
