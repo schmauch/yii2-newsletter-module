@@ -12,6 +12,7 @@ use schmauch\newsletter\models\RecipientsInterface;
 
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\helpers\Url;
 use yii\helpers\Json;
 use yii\web\Controller;

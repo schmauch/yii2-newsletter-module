@@ -5,6 +5,8 @@ namespace schmauch\newsletter\controllers;
 use schmauch\newsletter\models\NewsletterAttachment;
 use schmauch\newsletter\models\NewsletterMessage;
 
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\helpers\Json;
 use yii\web\Controller;
 use yii\web\UploadedFile;

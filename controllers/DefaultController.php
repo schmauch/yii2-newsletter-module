@@ -2,6 +2,8 @@
 
 namespace schmauch\newsletter\controllers;
 
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 
 class DefaultController extends Controller

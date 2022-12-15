@@ -4,11 +4,12 @@ namespace schmauch\newsletter\controllers;
 
 use schmauch\newsletter\models\NewsletterBlacklist;
 use schmauch\newsletter\models\NewsletterBlacklistSearch;
+
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Session;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 
 /**
  * BlacklistController implements the CRUD actions for NewsletterBlacklist model.

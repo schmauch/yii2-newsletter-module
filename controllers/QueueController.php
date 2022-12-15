@@ -7,7 +7,8 @@ use schmauch\newsletter\jobs\SendMailJob;
 use schmauch\newsletter\models\NewsletterBlacklist;
 use schmauch\newsletter\models\NewsletterMessage;
 
-
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 
 class QueueController extends Controller
