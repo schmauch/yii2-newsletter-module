@@ -57,6 +57,10 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         
         $mailer->htmlLayout = '@schmauch/newsletter/' . 
             $module->params['template_path'] . $newsletter->template . '/html';
+        
+        // make subject and email available in template
+        $mailer->view->params['title'] = $newsletter->subject;
+        $mailer->view->params['email'] = $this->recipient['email'];
             
         
 
@@ -94,10 +98,6 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         $message->setTo($this->recipient['email']);
         $message->setSubject($newsletter->subject);
         
-        
-        // make subject and email available in template
-        $mailer->view->params['title'] = $newsletter->subject;
-        $mailer->view->params['email'] = $this->recipient['email'];
 
         foreach($attachments as $attachment) {
             $message->attach($attachment);
