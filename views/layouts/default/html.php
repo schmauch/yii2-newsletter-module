@@ -64,7 +64,7 @@
         <tr class="header">
             <td colspan="3">
                 <img alt="logo.png" 
-                src="<?= $message->embed('/home/schmauch/www/girardi/yii/dev/yii2-newsletter-module/views/layouts/default/assets/logo.png') ?>" 
+                src="<?= $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/logo.png') ?>" 
                 width="500" height="139">
             </td>
         </tr>
@@ -98,7 +98,7 @@
                         </td class="innerTd">
                         <td class="innerTd" style="text-align: right;">
                             <img alt="logo.png" 
-                                src="<?= $message->embed('/home/schmauch/www/girardi/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
+                                src="<?= $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
                                 width="113" height="100">
                         </td>
                         <td class="right">&nbsp;
