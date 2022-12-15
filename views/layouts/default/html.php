@@ -1,13 +1,8 @@
-<?php
-
-use yii\helpers\Url;
-
-?> 
 <?php $this->beginPage() ?>
 <!doctype html>
 <html lang="de">
 <head>
-    <title><?php echo $message->subject ?></title>
+    <title><?php echo $message->getSubject() ?></title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -84,7 +79,7 @@ use yii\helpers\Url;
             <td colspan="3">
                 <p>
                     Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich
-                    <a href="<?= Url::to(['blacklist/sign-off', 'email' => $message->to], true) ?>">
+                    <a href="https://www.girardi.ch/newsletter/sign-off?email<?php echo $this->email ?>">
                         vom Newsletter abmelden
                     </a>
                 </p>
