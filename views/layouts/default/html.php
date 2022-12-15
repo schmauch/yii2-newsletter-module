@@ -72,11 +72,16 @@
         <tr class="content">
             <td class="left">&nbsp;</td>
             <td>
+                <p>&nbsp;</p>
+                
                 <?= $content ?>
+                
+                <p>&nbsp;</p>
             </td>
             <td class="right">&nbsp;</td>
         </tr>
         <tr class="footer">
+            <p>&nbsp;</p>
             <td colspan="3">
                 <p>
                     Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich
@@ -108,6 +113,7 @@
             </td>
         </tr>
     </table>
+    <p>&nbsp;</p>
     <?php $this->endBody() ?>
 </body>
 </html>
