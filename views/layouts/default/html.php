@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="de">
 <head>
-    <title><?php echo $message->getSubject() ?></title>
+    <title><?php echo $this->params['title'] ?></title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -50,6 +50,7 @@
         .footer .imprint {
             padding-top: 16px;
             padding-bottom: 16px;
+            color: white;
             text-align: left;
         }
         
@@ -79,7 +80,7 @@
             <td colspan="3">
                 <p>
                     Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich
-                    <a href="https://www.girardi.ch/newsletter/sign-off?email<?php echo $message->getTo() ?>">
+                    <a href="https://www.girardi.ch/newsletter/sign-off?email=<?= $this->params['email'] ?>">
                         vom Newsletter abmelden
                     </a>
                 </p>
@@ -98,7 +99,7 @@
                         </td class="innerTd">
                         <td class="innerTd" style="text-align: right;">
                             <img alt="logo.png" 
-                                src="<?= $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
+                                src="<?php // $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
                                 width="113" height="100">
                         </td>
                         <td class="right">&nbsp;
