@@ -104,9 +104,6 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         }
         
         if($mailer->send($message)) {
-            /*Console::stdout(
-                'verarbeite ' . 
-                Console::ansiFormat($this->recipient->email, [Console::FG_GREEN]) . "\n");*/
             echo '[' . date('Y-m-d H:i:s') . '] verarbeite ' . $this->recipient['email'] . "\n";
             $newsletter->mails_sent++;
             $newsletter->save();

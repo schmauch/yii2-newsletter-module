@@ -110,12 +110,19 @@ class QueueController extends Controller
                 
                 
                 $now = time();
-
-                $atom = $this->message->send_date . 'T' . 
-                    $this->message->send_time . date('P');
-                $sendAt = new \DateTime($atom);
                 
-                $delay = $sendAt->getTimestamp() - $now;
+                if (!empty($this->message->send_date)) {
+                    if (empty($this->message->send_time)) {
+                        $this->message->send_time = '00:00:00';
+                    }
+                    $atom = $this->message->send_date . 'T' . 
+                        $this->message->send_time . date('P');
+                    $sendAt = new \DateTime($atom);
+                    $delay = $sendAt->getTimestamp() - $now;
+                } else {
+                    $delay = 0;
+                }
+                
                 
                 if($delay < 0) {
                     $delay = 0;
@@ -177,7 +184,13 @@ class QueueController extends Controller
     
     public function actionFinish($id)
     {
-        
+        if ($message->mails_sent + $message->blacklisted >= $message->recipientsObject->getDataProvider()->getTotalCount()) {
+                $message->completed_at = date('Y-m-d H:i:s');
+                $message->save();
+                echo 'Warteschlange abgearbeitet. ' . $message->completed_at;
+                posix_kill($message->pid, SIGTERM);
+                exit();
+        }
     }
     
     

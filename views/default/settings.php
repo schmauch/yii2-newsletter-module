@@ -1,5 +1,5 @@
 <h1>Einstellungen</h1>
-<table>
+<table class="table table-striped table-hover">
     <tbody>
 <?php
 

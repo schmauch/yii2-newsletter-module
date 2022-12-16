@@ -41,15 +41,7 @@ class ConsoleController extends \yii\console\Controller
         $message = NewsletterMessage::findOne($this->id);
         $this->queue = $this->module->queue;
         $this->queue->channel = $message->slug;
-        
-        if ($message->mails_sent + $message->blacklisted == $message->recipientsObject->getDataProvider()->getTotalCount()) {
-                $message->completed_at = date('Y-m-d H:i:s');
-                $message->save();
-                echo 'Warteschlange abgearbeitet. ' . $message->completed_at;
-                posix_kill($message->pid, SIGTERM);
-                exit();
-        }
-        
+                
         echo '[' . date('Y-m-d H:i:s') . '] Warte auf Queue: ' . $this->queue->channel . "\n";
         
         if (\Yii::$app instanceof Yii\console\Application) {
