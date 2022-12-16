@@ -63,6 +63,7 @@ foreach($checks as $key => $value) {
 
 if (array_product($checks) && empty($model->pid)) {
     echo Html::a('Newsletter versenden', Url::to(['queue/queue', 'id' => $model->id]), ['class' => 'btn d-block btn-primary']);
-} else {
+} elseif (!empty($model->pid)) {
+    echo '<div class="alert alert-danger">Der Newsletter wird/wurde bereits versendet.</div>';
     echo Html::a('Versandbericht ansehen', Url::to(['queue/status', 'id' => $model->id]), ['class' => 'btn d-block btn-primary']);
 }

@@ -15,7 +15,7 @@ class QueueController extends Controller
 {
     protected $message;
     
-    
+    protected $logFile;
     
     /**
      * @inheritDoc
@@ -59,6 +59,8 @@ class QueueController extends Controller
             throw new \Exception('Keine Nachricht gefunden.');
         }
         
+       $this->logFile = $this->message->getMessageDir() . 'queue.log';
+        
         return true;
     }
     
@@ -69,6 +71,10 @@ class QueueController extends Controller
      public function actionQueue($id)
      {
         $checks = $this->message->isReadyToSend($this->message);
+        
+        if (!empty($this->message->pid)) {
+            return $this->redirect(['status', 'id' => $id]);
+        }
         
         $messages_limit = $this->module->messages_limit ?? 30;
         $messages_delay = $this->module->messages_delay ?? 360;
@@ -94,6 +100,11 @@ class QueueController extends Controller
                 if (NewsletterBlacklist::find()->where(['email' => $recipient['email']])->count()) {
                     $this->message->blacklisted++;
                     $this->message->save();
+                    file_put_contents(
+                        $this->logFile, 
+                        $recipient['email'] . " wurde aufgrund eines Blacklist-Eintrags ausgeschlossen.\n",
+                        FILE_APPEND
+                    );
                     continue;
                 }
                 
@@ -135,8 +146,6 @@ class QueueController extends Controller
      */
     public function actionStatus($id)
     {
-        //$this->message = $this->findModel($id);
-        
         $queue = $this->module->queue;
         $queue->channel = $this->message->slug;
         
@@ -161,6 +170,13 @@ class QueueController extends Controller
         $this->message->pid = exec($command);
         $this->message->save();
         return $this->redirect(['status', 'id' => $id]);
+        
+    }
+    
+    
+    
+    public function actionFinish($id)
+    {
         
     }
     

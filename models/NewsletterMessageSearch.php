@@ -17,7 +17,7 @@ class NewsletterMessageSearch extends NewsletterMessage
     public function rules()
     {
         return [
-            [['id', 'blacklisted', 'mails_sent'], 'integer'],
+            //[['id', 'blacklisted', 'mails_sent'], 'integer'],
             [['subject', 'template', 'send_date', 'send_time', 'completed_at'], 'safe'],
         ];
     }

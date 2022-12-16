@@ -76,16 +76,18 @@ class NewsletterMessage extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'slug' => 'Slug',
-            'subject' => 'Subject',
-            'template' => 'Template',
-            'recipients_class' => 'Recipients Object',
+            'subject' => 'Betreff',
+            'template' => 'Vorlage',
+            'recipients_class' => 'Empfänger Klasse',
+            'recipients_config' => 'Empfänger Einstellungen',
             'send_date' => 'Datum',
             'send_time' => 'Uhrzeit',
-            'completed_at' => 'Completed At',
-            'blacklisted' => 'Blacklisted',
+            'mails_sent' => 'verschickt',
+            'blacklisted' => 'ausgeschlossen',
+            'completed_at' => 'erledigt am',
         ];
     }
-    
+        
     
         
     /**

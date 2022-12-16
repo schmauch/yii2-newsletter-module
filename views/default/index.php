@@ -27,8 +27,8 @@ $this->title = 'Willkommen im Newsletter Module';
                 nach Newslettern suchen.
             </p>
             <p>
-                <a href="<?= Url::to(['message/index']) ?>" class="btn btn-outline-secondary">
-                    Liste ansehen
+                <a href="<?= Url::to(['message/index']) ?>" class="btn btn-outline-secondary ">
+                    Liste ansehen &raquo;
                 </a>
             </p>
         </div>
@@ -44,7 +44,7 @@ $this->title = 'Willkommen im Newsletter Module';
             </p>
             <p>
                 <a href="<?= Url::to(['blacklist/index']) ?>" class="btn btn-outline-secondary">
-                    Schwarze Liste ansehen/bearbeiten
+                    Schwarze Liste ansehen/bearbeiten &raquo;
                 </a>
             </p>
         </div>
@@ -56,7 +56,7 @@ $this->title = 'Willkommen im Newsletter Module';
             </p>
             <p>
                 <a href="<?= Url::to(['default/settings']) ?>" class="btn btn-outline-secondary">
-                    Einstellungen ansehen/bearbeiten
+                    Einstellungen ansehen/bearbeiten &raquo;
                 </a>
             </p>
         </div>
