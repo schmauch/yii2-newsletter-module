@@ -3,6 +3,7 @@
 namespace schmauch\newsletter\models;
 
 use Yii;
+use \yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "newsletter_blacklist".
@@ -11,7 +12,7 @@ use Yii;
  * @property string $email
  * @property string $added_at
  */
-class NewsletterBlacklist extends \yii\db\ActiveRecord
+class NewsletterBlacklist extends ActiveRecord
 {
     /**
      * {@inheritdoc}
