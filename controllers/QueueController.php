@@ -151,8 +151,8 @@ class QueueController extends Controller
             }
         }
         
-        //return $this->redirect(['run', 'id' => $id]);
         return $this->redirect(['status', 'id' => $id]);
+        //return $this->redirect(['run', 'id' => $id]);
      }
 
 

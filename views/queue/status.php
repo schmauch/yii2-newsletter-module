@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 $this->registerMetaTag([
     'http-equiv' => 'refresh',
@@ -22,7 +23,7 @@ $states = [
 echo '<h1>' . Html::encode($this->title) . '</h1>';
 
 if (!empty($model->pid)) {
-    echo '<div class="alert alert-danger">Die Warteschlange ist in Bearbeitung! [' . $model->pid . ']</div>';
+    echo '<div class="alert alert-warning">Die Warteschlange ist in Bearbeitung! [' . $model->pid . ']</div>';
 }
 
 
@@ -64,6 +65,13 @@ echo '
 echo '
 </table>
 ';
+
+if (empty($model->pid)) {
+    echo 
+    '<div>' .
+        Html::a('Warteschlange abarbeiten.', Url::to(['run', 'id' => $model->id]), ['class' => 'btn btn-success btn-block']) .
+    '</div>';
+}
 
 echo '';
 ?>
