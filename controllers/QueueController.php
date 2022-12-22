@@ -97,8 +97,9 @@ class QueueController extends Controller
             
             foreach($dataProvider->getModels() as $recipient) {
                 
-                $columns = $this->message->recipientsObject->getColumns();
                 
+                $columns = $this->message->recipientsObject->getColumns();
+                                
                 if (count(array_filter(array_keys($columns), 'is_string'))) {
                     $emailColumn = 'email';
                 } else {
@@ -115,7 +116,6 @@ class QueueController extends Controller
                     );
                     continue;
                 }
-                
                 
                 $now = time();
                 
