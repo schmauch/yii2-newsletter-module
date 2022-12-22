@@ -65,9 +65,7 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         
         // make subject and email available in template
         $mailer->view->params['title'] = $newsletter->subject;
-        $mailer->view->params['email'] = $this->recipient['emailto'];
-        echo
-        
+        $mailer->view->params['email'] = $this->recipient['email'];
 
         $embed = [];
         $attachments = [];
