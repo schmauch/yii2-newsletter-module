@@ -97,12 +97,20 @@ class QueueController extends Controller
             
             foreach($dataProvider->getModels() as $recipient) {
                 
-                if (NewsletterBlacklist::find()->where(['email' => $recipient['email']])->count()) {
+                $columns = $this->message->recipientsObject->getColumns();
+                
+                if (count(array_filter(array_keys($columns), 'is_string'))) {
+                    $emailColumn = 'email';
+                } else {
+                    $emailColumn = $columns[array_search('email', array_column($columns, 'header'))]['attribute'];
+                }
+                
+                if (NewsletterBlacklist::find()->where(['email' => $recipient[$emailColumn]])->count()) {
                     $this->message->blacklisted++;
                     $this->message->save();
                     file_put_contents(
                         $this->logFile, 
-                        $recipient['email'] . " wurde aufgrund eines Blacklist-Eintrags ausgeschlossen.\n",
+                        $recipient[$emailColumn] . " wurde aufgrund eines Blacklist-Eintrags ausgeschlossen.\n",
                         FILE_APPEND
                     );
                     continue;
@@ -143,7 +151,8 @@ class QueueController extends Controller
             }
         }
         
-        return $this->redirect(['run', 'id' => $id]);
+        //return $this->redirect(['run', 'id' => $id]);
+        return $this->redirect(['status', 'id' => $id]);
      }
 
 

@@ -38,7 +38,6 @@ class ActiveRecordRecipients extends Model implements RecipientsInterface
         
         $this->model = new $this->activeRecord();
         return array_keys($this->model->attributes);
-        //print_r(array_keys($this->model->attributes));
     }
     
 }

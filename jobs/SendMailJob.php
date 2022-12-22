@@ -28,9 +28,12 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
      */
     public function execute($queue)
     {
+        echo 'hier bin ich';
         $module = NewsletterModule::getInstance();
         $newsletter = NewsletterMessage::findOne($this->message_id);
-                
+        
+        
+        // get sender email from config        
         if (isset($module->senderEmail)) {
             if (isset($module->senderName)) {
                 $from = [$module->senderEmail => $module->senderName];
@@ -47,21 +50,23 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         }
         
         
-        
+        // instanciate mailer
         $mailer = \Yii::$app->mailer;
         if (!is_a($mailer, '\yii\mail\MailerInterface')) {
             die('Kein Mailer!');
         }
         
+        // set view path
         $mailer->viewPath = $newsletter->getMessageDir();
         
+        // set layout
         $mailer->htmlLayout = '@schmauch/newsletter/' . 
             $module->params['template_path'] . $newsletter->template . '/html';
         
         // make subject and email available in template
         $mailer->view->params['title'] = $newsletter->subject;
-        $mailer->view->params['email'] = $this->recipient['email'];
-            
+        $mailer->view->params['email'] = $this->recipient['emailto'];
+        echo
         
 
         $embed = [];
@@ -80,7 +85,11 @@ class SendMailJob extends BaseObject implements \yii\queue\JobInterface
         }
         
         foreach($newsletter->recipientsObject->getColumns() as $column) {
-            $params[$column] = $this->recipient[$column];
+            if(is_array($column)) {
+                $params[$column['header']] = $this->recipient[$column['attribute']];
+            } else {
+                $params[$column] = $this->recipient[$column];
+            }
         }
         
         $message = $mailer->compose([

@@ -176,6 +176,12 @@ class MessageController extends Controller
         
         $placeholders = !empty($model->recipientsObject) ? $model->recipientsObject->getColumns() : [];
         
+        foreach($placeholders as &$placeholder) {
+            if(is_array($placeholder)) {
+                $placeholder = $placeholder['header'];
+            }
+        }
+        
         return $this->render('edit-html', [
             'model' => $model,
             'placeholders' => $placeholders,
@@ -215,6 +221,12 @@ class MessageController extends Controller
         
         //... Das müsste nicht hier passieren, weil auch schon beim HTML!
         $placeholders = !empty($model->recipientsObject) ? $model->recipientsObject->getColumns() : [];
+
+        foreach($placeholders as &$placeholder) {
+            if(is_array($placeholder)) {
+                $placeholder = $placeholder['header'];
+            }
+        }
         
         return $this->render('edit-text', [
             'model' => $model,
