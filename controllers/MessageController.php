@@ -314,6 +314,23 @@ class MessageController extends Controller
     }
     
     
+    
+    /**
+     * resend the message
+     */
+    public function actionResend($id)
+    {
+        $model = $this->findModel($id);
+        $model->pid = null;
+        $model->save();
+        
+        return $this->render('update', [
+            'model' => $model,
+            'templates' => $this->getTemplates(),
+        ]);
+    }
+    
+    
     /**
      * Check if newsletter is ready to send
      */
