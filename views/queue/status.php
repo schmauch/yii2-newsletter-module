@@ -84,7 +84,7 @@ echo '';
                 Verlauf ansehen
             </button>
         </h3>
-        <div id="logFile" class="accordion-collapse collapse" aria-labelledby="logHeading" data-bs-parent="#log">
+        <div id="logFile" class="accordion-collapse" aria-labelledby="logHeading" data-bs-parent="#log">
             <pre class="accordion-body alert alert-dark mb-0">
                 <?php 
                     $logFile = $model->getMessageDir() . 'queue.log';
