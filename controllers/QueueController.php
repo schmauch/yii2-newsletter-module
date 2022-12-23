@@ -84,6 +84,13 @@ class QueueController extends Controller
             return $this->redirect(['message/ready-to-send', 'id' => $id]);
         }
         
+        $columns = $this->message->recipientsObject->getColumns();
+        if (array_search('email', $columns) !== false) {
+            $emailColumn = 'email';
+        } else {
+            $emailColumn = $columns[array_search('email', array_column($columns, 'header'))]['attribute'];
+        }        
+        
         $dataProvider = $this->message->recipientsObject->getDataProvider();
         $dataProvider->getPagination()->setPageSize($messages_limit);
 
@@ -98,13 +105,7 @@ class QueueController extends Controller
             foreach($dataProvider->getModels() as $recipient) {
                 
                 
-                $columns = $this->message->recipientsObject->getColumns();
                                 
-                if (count(array_filter(array_keys($columns), 'is_string'))) {
-                    $emailColumn = 'email';
-                } else {
-                    $emailColumn = $columns[array_search('email', array_column($columns, 'header'))]['attribute'];
-                }
                 
                 if (NewsletterBlacklist::find()->where(['email' => $recipient[$emailColumn]])->count()) {
                     $this->message->blacklisted++;
