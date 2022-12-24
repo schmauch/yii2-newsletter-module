@@ -138,7 +138,7 @@ class QueueController extends Controller
                 }
                 
                 $delay += $i * $messages_delay;
-                $delay += rand(1, $messages_delay / $messages_limit);
+                $delay += rand(1, $messages_delay);
                 
                 $job = new SendMailJob([
                     'message_id' => $id,
