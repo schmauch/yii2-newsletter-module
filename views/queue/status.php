@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 $this->registerMetaTag([
     'http-equiv' => 'refresh',
@@ -22,7 +23,7 @@ $states = [
 echo '<h1>' . Html::encode($this->title) . '</h1>';
 
 if (!empty($model->pid)) {
-    echo '<div class="alert alert-danger">Die Warteschlange ist in Bearbeitung! [' . $model->pid . ']</div>';
+    echo '<div class="alert alert-warning">Die Warteschlange ist in Bearbeitung! [' . $model->pid . ']</div>';
 }
 
 
@@ -65,6 +66,13 @@ echo '
 </table>
 ';
 
+if (empty($model->pid)) {
+    echo 
+    '<div>' .
+        Html::a('Warteschlange abarbeiten.', Url::to(['run', 'id' => $model->id]), ['class' => 'btn btn-success btn-block']) .
+    '</div>';
+}
+
 echo '';
 ?>
 <div id="log" class="accordion">
@@ -76,7 +84,7 @@ echo '';
                 Verlauf ansehen
             </button>
         </h3>
-        <div id="logFile" class="accordion-collapse collapse" aria-labelledby="logHeading" data-bs-parent="#log">
+        <div id="logFile" class="accordion-collapse" aria-labelledby="logHeading" data-bs-parent="#log">
             <pre class="accordion-body alert alert-dark mb-0">
                 <?php 
                     $logFile = $model->getMessageDir() . 'queue.log';

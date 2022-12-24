@@ -7,13 +7,45 @@ use schmauch\newsletter\jobs\SendMailJob;
 use schmauch\newsletter\models\NewsletterBlacklist;
 use schmauch\newsletter\models\NewsletterMessage;
 
-
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 
 class QueueController extends Controller
 {
     protected $message;
-
+    
+    protected $logFile;
+    
+    /**
+     * @inheritDoc
+     */
+    public function behaviors()
+    {
+        return array_merge(
+            parent::behaviors(),
+            [
+                'verbs' => [
+                    'class' => VerbFilter::className(),
+                    'actions' => [
+                        'delete' => ['POST'],
+                    ],
+                ],
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],            
+            ],
+        );
+    }
+    
+    
+    
     /**
      * //...
      */
@@ -27,6 +59,8 @@ class QueueController extends Controller
             throw new \Exception('Keine Nachricht gefunden.');
         }
         
+       $this->logFile = $this->message->getMessageDir() . 'queue.log';
+        
         return true;
     }
     
@@ -38,6 +72,10 @@ class QueueController extends Controller
      {
         $checks = $this->message->isReadyToSend($this->message);
         
+        if (!empty($this->message->pid)) {
+            return $this->redirect(['status', 'id' => $id]);
+        }
+        
         $messages_limit = $this->module->messages_limit ?? 30;
         $messages_delay = $this->module->messages_delay ?? 360;
         
@@ -45,6 +83,13 @@ class QueueController extends Controller
         if (!array_product($checks)) {
             return $this->redirect(['message/ready-to-send', 'id' => $id]);
         }
+        
+        $columns = $this->message->recipientsObject->getColumns();
+        if (array_search('email', $columns) !== false) {
+            $emailColumn = 'email';
+        } else {
+            $emailColumn = $columns[array_search('email', array_column($columns, 'header'))]['attribute'];
+        }        
         
         $dataProvider = $this->message->recipientsObject->getDataProvider();
         $dataProvider->getPagination()->setPageSize($messages_limit);
@@ -59,20 +104,34 @@ class QueueController extends Controller
             
             foreach($dataProvider->getModels() as $recipient) {
                 
-                if (NewsletterBlacklist::find()->where(['email' => $recipient['email']])->count()) {
+                
+                                
+                
+                if (NewsletterBlacklist::find()->where(['email' => $recipient[$emailColumn]])->count()) {
                     $this->message->blacklisted++;
                     $this->message->save();
+                    file_put_contents(
+                        $this->logFile, 
+                        $recipient[$emailColumn] . " wurde aufgrund eines Blacklist-Eintrags ausgeschlossen.\n",
+                        FILE_APPEND
+                    );
                     continue;
                 }
                 
-                
                 $now = time();
-
-                $atom = $this->message->send_date . 'T' . 
-                    $this->message->send_time . date('P');
-                $sendAt = new \DateTime($atom);
                 
-                $delay = $sendAt->getTimestamp() - $now;
+                if (!empty($this->message->send_date)) {
+                    if (empty($this->message->send_time)) {
+                        $this->message->send_time = '00:00:00';
+                    }
+                    $atom = $this->message->send_date . 'T' . 
+                        $this->message->send_time . date('P');
+                    $sendAt = new \DateTime($atom);
+                    $delay = $sendAt->getTimestamp() - $now;
+                } else {
+                    $delay = 0;
+                }
+                
                 
                 if($delay < 0) {
                     $delay = 0;
@@ -93,7 +152,8 @@ class QueueController extends Controller
             }
         }
         
-        return $this->redirect(['run', 'id' => $id]);
+        return $this->redirect(['status', 'id' => $id]);
+        //return $this->redirect(['run', 'id' => $id]);
      }
 
 
@@ -103,8 +163,6 @@ class QueueController extends Controller
      */
     public function actionStatus($id)
     {
-        //$this->message = $this->findModel($id);
-        
         $queue = $this->module->queue;
         $queue->channel = $this->message->slug;
         
@@ -130,6 +188,19 @@ class QueueController extends Controller
         $this->message->save();
         return $this->redirect(['status', 'id' => $id]);
         
+    }
+    
+    
+    
+    public function actionFinish($id)
+    {
+        if ($message->mails_sent + $message->blacklisted >= $message->recipientsObject->getDataProvider()->getTotalCount()) {
+                $message->completed_at = date('Y-m-d H:i:s');
+                $message->save();
+                echo 'Warteschlange abgearbeitet. ' . $message->completed_at;
+                posix_kill($message->pid, SIGTERM);
+                exit();
+        }
     }
     
     

@@ -1,10 +1,12 @@
 <h1>Einstellungen</h1>
-<ul>
+<table class="table table-striped table-hover">
+    <tbody>
 <?php
 
 foreach($params as $key => $param) {
-    echo '<li>' . $key . ': ' . print_r($param, true) . '</li>';
+    echo '<tr><td>' . $key . '</td><td>' . print_r($param, true) . '</td></tr>';
 }
 
 ?>
-</ul>
+    </tbody>
+</table>

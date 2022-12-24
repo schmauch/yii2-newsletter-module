@@ -33,7 +33,7 @@ echo '</ul></div></div>';
 
 echo '
     <div class="form-group">' .
-        Html::submitButton('Save', ['class' => 'btn btn-success']) . ' ' .
+        Html::submitButton('speichern', ['class' => 'btn btn-success']) . ' ' .
         Html::a('Abbrechen', Url::previous(), ['class' => 'btn btn-dark m-3']) .
     '</div>';
 

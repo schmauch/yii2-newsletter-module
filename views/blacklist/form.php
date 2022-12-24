@@ -15,11 +15,11 @@ $this->title = 'Vom Newsletter abmelden | Arthur Girardi AG';
     <div class="newsletter-blacklist-form">
     
         <?php $form = ActiveForm::begin(); ?>
-    
+            
         <?= $form->field($model, 'email')->textInput(['type' => 'email']) ?>
         
         <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton('speichern', ['class' => 'btn btn-success mt-3']) ?>
         </div>
     
         <?php ActiveForm::end(); ?>

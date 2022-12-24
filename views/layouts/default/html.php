@@ -1,13 +1,8 @@
-<?php
-
-use yii\helpers\Url;
-
-?> 
 <?php $this->beginPage() ?>
 <!doctype html>
 <html lang="de">
 <head>
-    <title><?php echo $message->subject ?></title>
+    <title><?php echo $this->params['title'] ?></title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -55,6 +50,7 @@ use yii\helpers\Url;
         .footer .imprint {
             padding-top: 16px;
             padding-bottom: 16px;
+            color: white;
             text-align: left;
         }
         
@@ -69,22 +65,27 @@ use yii\helpers\Url;
         <tr class="header">
             <td colspan="3">
                 <img alt="logo.png" 
-                src="<?= $message->embed('/home/schmauch/www/girardi/yii/dev/yii2-newsletter-module/views/layouts/default/assets/logo.png') ?>" 
+                src="<?= $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/logo.png') ?>" 
                 width="500" height="139">
             </td>
         </tr>
         <tr class="content">
             <td class="left">&nbsp;</td>
             <td>
+                <p>&nbsp;</p>
+                
                 <?= $content ?>
+                
+                <p>&nbsp;</p>
             </td>
             <td class="right">&nbsp;</td>
         </tr>
         <tr class="footer">
             <td colspan="3">
+                <p>&nbsp;</p>
                 <p>
                     Falls Sie keine weiteren Nachrichten mehr erhalten möchten, können Sie sich
-                    <a href="<?= Url::to(['blacklist/sign-off', 'email' => $message->to], true) ?>">
+                    <a href="https://newsletter.girardi.ch/list/sign-off?email=<?= $this->params['email'] ?>">
                         vom Newsletter abmelden
                     </a>
                 </p>
@@ -103,7 +104,7 @@ use yii\helpers\Url;
                         </td class="innerTd">
                         <td class="innerTd" style="text-align: right;">
                             <img alt="logo.png" 
-                                src="<?= $message->embed('/home/schmauch/www/girardi/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
+                                src="<?= $message->embed('/home/girardi/www/yii/dev/yii2-newsletter-module/views/layouts/default/assets/macher.png') ?>" 
                                 width="113" height="100">
                         </td>
                         <td class="right">&nbsp;
@@ -112,6 +113,7 @@ use yii\helpers\Url;
             </td>
         </tr>
     </table>
+    <p>&nbsp;</p>
     <?php $this->endBody() ?>
 </body>
 </html>

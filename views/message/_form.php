@@ -23,7 +23,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'send_time')->input('time') ?>
     
     <div class="form-group mt-3">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success mr-3']) ?>
+        <?= Html::submitButton('speichern', ['class' => 'btn btn-success mr-3']) ?>
         <?= Html::a('Abbrechen', Url::previous(), ['class' => 'btn btn-dark mr-3']) ?>
     </div>
 

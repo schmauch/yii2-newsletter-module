@@ -29,8 +29,8 @@ echo $this->render('recipients/'.$view, [
 </div>
 
 <div class="form-group mx-0 my-3 ">
-    <?= Html::submitButton('Save', ['class' => 'btn btn-success mr-3 ml-0 ']) ?>
-    <?= Html::a('Abbrechen', Url::previous(), ['class' => 'btn btn-dark mr-3']) ?>
+    <?= Html::submitButton('speichern', ['class' => 'btn btn-success mr-3 ml-0 ']) ?>&nbsp;&nbsp;&nbsp;
+    <?= Html::a('abbrechen', Url::previous(), ['class' => 'btn btn-dark mr-3']) ?>
 </div>
 
 <?php ActiveForm::end(); ?>

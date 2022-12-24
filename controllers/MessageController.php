@@ -12,6 +12,7 @@ use schmauch\newsletter\models\RecipientsInterface;
 
 use yii\data\ActiveDataProvider;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use yii\helpers\Url;
 use yii\helpers\Json;
 use yii\web\Controller;
@@ -37,20 +38,21 @@ class MessageController extends Controller
                         'delete' => ['POST'],
                     ],
                 ],
-            ]
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],            
+            ],
         );
     }
     
-    public function actionFoo()
-    {
-        $html = '@schmauch/newsletter/mail/638efefea9cd9/message.html';
-        $text = '@schmauch/newsletter/mail/638efefea9cd9/message.txt';
-        
-        $this->layout = '@schmauch/newsletter/views/layouts/default/html';
-        
-        return $this->render($html);
-    }
     
+        
     /**
      * Lists all NewsletterMessage models.
      *
@@ -65,6 +67,8 @@ class MessageController extends Controller
         
         if (!$archive) {
             $dataProvider->query->andWhere(['completed_at' => null]);
+        } else {
+            $dataProvider->query->andWhere(['not', ['completed_at' => null]]);
         }
 
         return $this->render('index', [
@@ -172,6 +176,12 @@ class MessageController extends Controller
         
         $placeholders = !empty($model->recipientsObject) ? $model->recipientsObject->getColumns() : [];
         
+        foreach($placeholders as &$placeholder) {
+            if(is_array($placeholder)) {
+                $placeholder = $placeholder['header'];
+            }
+        }
+        
         return $this->render('edit-html', [
             'model' => $model,
             'placeholders' => $placeholders,
@@ -211,6 +221,12 @@ class MessageController extends Controller
         
         //... Das müsste nicht hier passieren, weil auch schon beim HTML!
         $placeholders = !empty($model->recipientsObject) ? $model->recipientsObject->getColumns() : [];
+
+        foreach($placeholders as &$placeholder) {
+            if(is_array($placeholder)) {
+                $placeholder = $placeholder['header'];
+            }
+        }
         
         return $this->render('edit-text', [
             'model' => $model,
@@ -294,6 +310,23 @@ class MessageController extends Controller
         return $this->render('recipients', [
             'options' => $options,
             'model' => $model, 
+        ]);
+    }
+    
+    
+    
+    /**
+     * resend the message
+     */
+    public function actionResend($id)
+    {
+        $model = $this->findModel($id);
+        $model->pid = null;
+        $model->save();
+        
+        return $this->render('update', [
+            'model' => $model,
+            'templates' => $this->getTemplates(),
         ]);
     }
     
